@@ -3578,7 +3578,9 @@ select,
 .theme-setting-container input[type="text"],
 input[type="number"].moonlit-neo-range-input,
 .moonlit-preset-selector {
-    background: var(--sb-input-bg, color-mix(in srgb, var(--SmartThemeBlurTintColor) 90%, transparent)) !important;
+    /* background-color, not the background shorthand: the shorthand resets
+       background-image and wipes the native <select> caret arrow drawn by core CSS */
+    background-color: var(--sb-input-bg, color-mix(in srgb, var(--SmartThemeBlurTintColor) 90%, transparent)) !important;
     border-color: var(--sb-input-border, color-mix(in srgb, var(--SmartThemeBorderColor) 86%, transparent)) !important;
     color: var(--SmartThemeBodyColor) !important;
 }
