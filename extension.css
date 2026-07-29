@@ -294,16 +294,30 @@ body.waifuMode {
 }
 
 /* --- Connection Manager action buttons 連線設定檔動作按鈕 --- */
+/* The mobile touch-target rule in style.css pins every icon-only .menu_button
+   inside :is(#left-nav-panel, ...) to 34px, which is (1,4,0) specificity. The
+   9-icon connection profile row must stay on core's own sizing variable or it
+   overflows the API panel, so :is(body, #rm_api_block) and the trailing :not()
+   filters raise this block to (1,5,0). Do not "simplify" the selector: without
+   the extra weight these declarations never apply. */
 @media screen and (max-width: 1000px) {
-    .connection-profile-actions > .menu_button {
-        width: var(--connection-profile-action-size) !important;
-        min-width: var(--connection-profile-action-size) !important;
-        max-width: var(--connection-profile-action-size) !important;
-        height: var(--connection-profile-action-size) !important;
-        min-height: var(--connection-profile-action-size) !important;
-        max-height: var(--connection-profile-action-size) !important;
-        flex: 0 0 var(--connection-profile-action-size) !important;
+    :is(body, #rm_api_block) .connection-profile-actions > .menu_button:is(.fa, .fa-solid, .fa-regular, .fa-brands):not([data-label]):not([hidden]) {
+        width: var(--connection-profile-action-size, 30px) !important;
+        min-width: var(--connection-profile-action-size, 30px) !important;
+        max-width: var(--connection-profile-action-size, 30px) !important;
+        height: var(--connection-profile-action-size, 30px) !important;
+        min-height: var(--connection-profile-action-size, 30px) !important;
+        max-height: var(--connection-profile-action-size, 30px) !important;
+        flex: 0 0 var(--connection-profile-action-size, 30px) !important;
         padding: 0 !important;
+        font-size: calc(var(--mainFontSize) * 0.78) !important;
+        line-height: 1 !important;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    :is(body, #rm_api_block) .connection-profile-actions > .menu_button:is(.fa, .fa-solid, .fa-regular, .fa-brands):not([data-label]):not([hidden]) {
+        font-size: calc(var(--mainFontSize) * 0.72) !important;
     }
 }
 
