@@ -153,10 +153,10 @@ export const mobileThemeSettings = [
         "displayText": t`Increase Chat Input Field Spacing on Mobile`,
         "default": false,
         "category": "mobile-global-settings",
-        "description": t`Add extra bottom padding to chat input fields on mobile devices (screen width ≤ 1000px)`,
+        "description": t`Legacy extra bottom padding for chat input fields on narrow screens (width ≤ 1000px), for non-SillyBunny shells. SillyBunny's native composer already handles this spacing.`,
         "cssBlock": `
             @media screen and (max-width: 1000px) {
-                #send_form {
+                body:not(:has(.sb-shell-root)):not(:has(#sb-topbar-stack)) #send_form {
                     padding-bottom: 23px;
                 }
             }
