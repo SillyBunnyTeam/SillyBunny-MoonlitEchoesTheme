@@ -8,13 +8,13 @@
 > For vanilla SillyTavern, use the upstream Moonlit Echoes repository instead.
 >
 > Fork issues, SillyBunny layout bugs, and compatibility reports should be directed to **purachina** on GitHub through this repository:
-> <https://github.com/platberlitz/SillyBunny-MoonlitEchoesTheme/issues>
+> <https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/issues>
 
 This fork keeps Moonlit Echoes isolated as a third-party SillyBunny extension and carries its own chat style state, mobile layout guardrails, and SillyBunny shell compatibility CSS without requiring SillyBunny core changes.
 
 SillyBunny note: Moonlit's Echo, Whisper, Hush, Ripple, and Tide message styles are managed by this extension rather than SillyBunny core. If you import the included UI theme files, their core `chat_display` value stays on Flat for SillyBunny compatibility; choose Moonlit styles from Appearance or the Moonlit slash commands.
 
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/visual_novel_mode.png)
+![Moonlit Echoes running in SillyBunny](.github/SillyBunnyPreview/hero-home.png)
 
 **Moonlit Echoes 月下回聲** is a UI theme originally designed for SillyTavern. This repository adapts it for **SillyBunny** while preserving the upstream theme's modern, elegant, minimalist interface and desktop/mobile experience.
 
@@ -22,7 +22,7 @@ Moonlit Echoes was first released on the SillyTavern Discord server on November 
 
 | UI Interface | System Messages |
 |----------------------|-------------------|
-| <img src="https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/ui_overview.png"> | <img src="https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/system_messages.png"> |
+| <img src=".github/SillyBunnyPreview/ui-overview.png"> | <img src=".github/SillyBunnyPreview/system-messages.png"> |
 
 ## Features
 
@@ -33,19 +33,71 @@ Moonlit Echoes was first released on the SillyTavern Discord server on November 
 ### Moonlit Echoes Theme Presets
 Users can now easily share color schemes and themes based on Moonlit Echoes Theme. These presets can sync with SillyTavern’s built-in UI themes for a seamless transition.
 
-<img src="https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/moonlit_theme_presets.png" width="500">
+<img src=".github/SillyBunnyPreview/theme-presets.png" width="400">
 
 ## Screenshots
-The following screenshots are from **version 2.5.0**, taken on a MacBook using Chrome, showcasing the newly added "Glimmer (微光)" theme introduced in 2.5.0.
 
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/1chatstyle_flat.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/2chatstyle_bubble.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/3chatstyle_document.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/4chatstyle_echo.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/5chatstyle_whisper.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/6chatstyle_hush.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/7chatstyle_ripple.png)
-![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/8chatstyle_tide.png)
+The screenshots below were taken in **SillyBunny v1.7.0** running this fork, with Rivelle's **"Glimmer (微光)"** UI theme and its matching Moonlit preset applied. They are captured, not composed—[`tools/capture-sillybunny-screenshots.js`](tools/capture-sillybunny-screenshots.js) drives a real SillyBunny instance and reproduces the whole set.
+
+### Chat Styles
+
+Flat, Bubble, and Document are SillyBunny's own message layouts; Echo, Whisper, Hush, Ripple, and Tide are added by this extension. Every shot is the same conversation, so the differences you see are the styles themselves.
+
+**Flat**
+![Flat chat style](.github/SillyBunnyPreview/style-1-flat.png)
+
+**Bubble**
+![Bubble chat style](.github/SillyBunnyPreview/style-2-bubble.png)
+
+**Document**
+![Document chat style](.github/SillyBunnyPreview/style-3-document.png)
+
+**Echo** — the signature Moonlit style
+![Echo chat style](.github/SillyBunnyPreview/style-4-echo.png)
+
+**Whisper**
+![Whisper chat style](.github/SillyBunnyPreview/style-5-whisper.png)
+
+**Hush**
+![Hush chat style](.github/SillyBunnyPreview/style-6-hush.png)
+
+**Ripple**
+![Ripple chat style](.github/SillyBunnyPreview/style-7-ripple.png)
+
+**Tide**
+![Tide chat style](.github/SillyBunnyPreview/style-8-tide.png)
+
+### On Mobile
+
+| In Chat | Theme Settings |
+|----------------------|-------------------|
+| <img src=".github/SillyBunnyPreview/mobile-in-chat.png"> | <img src=".github/SillyBunnyPreview/mobile-settings.png"> |
+
+<details>
+<summary><b>Rivelle's original preview (vanilla SillyTavern)</b></summary>
+
+<br>
+
+These are the upstream showcase images from **version 2.5.0**, taken on a MacBook using Chrome and iPhone Safari, showcasing the "Glimmer (微光)" theme introduced in 2.5.0. They are Rivelle's own compositions and are kept here as she made them—they show Moonlit Echoes on vanilla SillyTavern rather than on SillyBunny.
+
+![](.github/ImagePreview/visual_novel_mode.png)
+
+| UI Interface | System Messages |
+|----------------------|-------------------|
+| <img src=".github/ImagePreview/ui_overview.png"> | <img src=".github/ImagePreview/system_messages.png"> |
+
+<img src=".github/ImagePreview/moonlit_theme_presets.png" width="500">
+
+![](.github/ImagePreview/1chatstyle_flat.png)
+![](.github/ImagePreview/2chatstyle_bubble.png)
+![](.github/ImagePreview/3chatstyle_document.png)
+![](.github/ImagePreview/4chatstyle_echo.png)
+![](.github/ImagePreview/5chatstyle_whisper.png)
+![](.github/ImagePreview/6chatstyle_hush.png)
+![](.github/ImagePreview/7chatstyle_ripple.png)
+![](.github/ImagePreview/8chatstyle_tide.png)
+
+</details>
 
 # Installation
 ## Prerequisites
@@ -59,7 +111,7 @@ If you are not using SillyBunny, install the upstream SillyTavern version instea
 ### 1. **Install the SillyBunny fork of Moonlit Echoes Theme**
 In the **SillyBunny Extension Manager**, use "Install from URL" and paste the following Git URL:
    ```
-   https://github.com/platberlitz/SillyBunny-MoonlitEchoesTheme
+   https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme
    ```
 
 ### 2. **Update `/SillyBunny/config.yaml` for thumbnail settings**
@@ -86,8 +138,8 @@ The Moonlit Echoes theme extension is ready to use after installation. However, 
 The newly added **"Glimmer (微光)"** theme in version 2.5.0 is especially recommended. This theme was specially designed for this release—minimalist, versatile, and perfect for using your phone under the covers at night.
 You can find it in the GitHub theme folder or download it directly below:
 
-- [Glimmer - by Rivelle.json](https://github.com/platberlitz/SillyBunny-MoonlitEchoesTheme/blob/main/theme/Glimmer%20-%20by%20Rivelle.json) → for SillyTavern User Settings
-- [[Moonlit] Glimmer - by Rivelle.json](https://github.com/platberlitz/SillyBunny-MoonlitEchoesTheme/blob/main/theme/%5BMoonlit%5D%20Glimmer%20-%20by%20Rivelle.json) → for Moonlit Echoes Theme Presets
+- [Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/Glimmer%20-%20by%20Rivelle.json) → for SillyTavern User Settings
+- [[Moonlit] Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/%5BMoonlit%5D%20Glimmer%20-%20by%20Rivelle.json) → for Moonlit Echoes Theme Presets
 
 No need to tweak anything—just drop the file in and you’re good to go!
 
@@ -134,7 +186,7 @@ However, the Moonlit Echoes theme preset is fundamentally separate from SillyTav
 Moonlit Echoes is a third-party theme extension and is not affiliated with the official SillyTavern project. It’s a personal project born out of love for SillyTavern and a strong preference for visual design. If you encounter any issues, please reach out to me first—I’ll do my best to help.
 
 ### Q: What other extensions are you using in the preview images?
-**A:** Here are the extensions I highly recommend and can confirm are fully supported by Moonlit Echoes:
+**A:** The SillyBunny screenshots at the top are a stock SillyBunny install with only this theme enabled, so nothing there is doing any extra work. Rivelle's original preview images use the extensions below—the ones she highly recommends and can confirm are fully supported by Moonlit Echoes:
 - **[SillyTavern / Extension-TopInfoBar](https://github.com/SillyTavern/Extension-TopInfoBar)**: Official extension. Lets you quickly switch chats, jump between files, and search messages. My absolute favorite—highly recommended!
 - **[SillyTavern / Extension-QuickPersona](https://github.com/SillyTavern/Extension-QuickPersona)**: Official extension. Easily switch personas from the chat input area, with stylish visual cues.
 - **[SillyTavern / Extension-TypingIndicator](https://github.com/SillyTavern/Extension-TypingIndicator)**: Official extension. Shows a cute `{{char}} is typing...` indicator while characters are responding.
@@ -148,7 +200,7 @@ Moonlit Echoes is a third-party theme extension and is not affiliated with the o
 
 # Feedback & Suggestions
 For this SillyBunny fork, submit issues and feature requests here:
-<https://github.com/platberlitz/SillyBunny-MoonlitEchoesTheme/issues>
+<https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/issues>
 
 Please direct vanilla SillyTavern/upstream Moonlit Echoes issues to the original project instead.
 
