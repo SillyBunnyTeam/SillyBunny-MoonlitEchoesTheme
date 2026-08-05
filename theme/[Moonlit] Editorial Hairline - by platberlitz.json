@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Editorial Hairline - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(17, 17, 17, 1)",
+    "customThemeColor2": "rgba(200, 16, 46, 1)",
+    "customBgColor1": "rgba(247, 247, 247, 1)",
+    "customBgColor2": "rgba(255, 255, 255, 1)",
+    "customTopBarColor": "rgba(255, 255, 255, 1)",
+    "Drawer-iconColor": "rgba(17, 17, 17, 1)",
+    "sheldBackgroundColor": "rgba(255, 255, 255, 1)",
+    "customScrollbarColor": "rgba(17, 17, 17, 1)",
+    "customlastInContext": "none",
+    "rawCustomCss": ""
+  }
+}

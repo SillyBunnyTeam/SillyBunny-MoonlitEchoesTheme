@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Synthwave Drive - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(255, 110, 199, 1)",
+    "customThemeColor2": "rgba(77, 208, 225, 1)",
+    "customBgColor1": "rgba(60, 29, 84, 1)",
+    "customBgColor2": "rgba(42, 30, 77, 1)",
+    "customTopBarColor": "rgba(110, 20, 78, 1)",
+    "Drawer-iconColor": "rgba(255, 214, 245, 1)",
+    "sheldBackgroundColor": "rgba(29, 16, 66, 1)",
+    "customScrollbarColor": "rgba(255, 110, 199, 0.5)",
+    "customlastInContext": "3px solid rgba(255, 110, 199, 1)",
+    "rawCustomCss": ""
+  }
+}

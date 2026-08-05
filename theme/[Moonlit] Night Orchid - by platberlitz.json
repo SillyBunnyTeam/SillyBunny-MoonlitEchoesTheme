@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Night Orchid - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(216, 132, 212, 1)",
+    "customThemeColor2": "rgba(145, 201, 210, 1)",
+    "customBgColor1": "rgba(63, 39, 74, 1)",
+    "customBgColor2": "rgba(51, 36, 63, 1)",
+    "customTopBarColor": "rgba(62, 34, 71, 1)",
+    "Drawer-iconColor": "rgba(249, 233, 255, 1)",
+    "sheldBackgroundColor": "rgba(39, 25, 51, 1)",
+    "customScrollbarColor": "rgba(229, 169, 228, 0.48)",
+    "customlastInContext": "3px solid rgba(216, 132, 212, 1)",
+    "rawCustomCss": ""
+  }
+}

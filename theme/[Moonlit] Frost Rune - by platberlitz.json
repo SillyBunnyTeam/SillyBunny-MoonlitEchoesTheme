@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Frost Rune - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(143, 209, 226, 1)",
+    "customThemeColor2": "rgba(181, 233, 239, 1)",
+    "customBgColor1": "rgba(43, 72, 94, 1)",
+    "customBgColor2": "rgba(41, 63, 84, 1)",
+    "customTopBarColor": "rgba(47, 73, 97, 1)",
+    "Drawer-iconColor": "rgba(223, 246, 255, 1)",
+    "sheldBackgroundColor": "rgba(31, 52, 73, 1)",
+    "customScrollbarColor": "rgba(143, 209, 226, 0.5)",
+    "customlastInContext": "3px solid rgba(143, 209, 226, 1)",
+    "rawCustomCss": ""
+  }
+}

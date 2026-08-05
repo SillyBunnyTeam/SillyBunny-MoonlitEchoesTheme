@@ -1,0 +1,18 @@
+{
+  "name": "Grimoire - by platberlitz",
+  "main_text_color": "rgba(51, 41, 26, 1)",
+  "italics_text_color": "rgba(17, 19, 24, 1)",
+  "underline_text_color": "rgba(17, 19, 24, 1)",
+  "quote_text_color": "rgba(122, 34, 34, 1)",
+  "blur_tint_color": "rgba(242, 233, 210, 1)",
+  "chat_tint_color": "rgba(232, 220, 192, 1)",
+  "user_mes_blur_tint_color": "rgba(236, 223, 192, 1)",
+  "bot_mes_blur_tint_color": "rgba(247, 240, 221, 1)",
+  "shadow_color": "rgba(90, 60, 20, 0.22)",
+  "border_color": "rgba(201, 179, 130, 1)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(237, 227, 201, 1)",
+  "custom_css": ""
+}

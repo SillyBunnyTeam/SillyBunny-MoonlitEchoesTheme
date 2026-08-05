@@ -1,0 +1,18 @@
+{
+  "name": "Chrome HUD - by platberlitz",
+  "main_text_color": "rgba(207, 230, 242, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(0, 229, 255, 1)",
+  "quote_text_color": "rgba(79, 195, 247, 1)",
+  "blur_tint_color": "rgba(5, 14, 24, 1)",
+  "chat_tint_color": "rgba(8, 21, 31, 1)",
+  "user_mes_blur_tint_color": "rgba(6, 40, 59, 1)",
+  "bot_mes_blur_tint_color": "rgba(6, 29, 43, 1)",
+  "shadow_color": "rgba(0, 180, 255, 0.22)",
+  "border_color": "rgba(0, 180, 255, 0.24)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(7, 18, 28, 1)",
+  "custom_css": ""
+}

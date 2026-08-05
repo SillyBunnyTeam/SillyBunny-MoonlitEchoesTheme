@@ -3,6 +3,7 @@ import {
     isNativeMessageLineHeightValue,
     themeCustomSettings,
 } from './theme-settings.js';
+import { seedRegexAgentPresets } from './regex-agent-presets.js';
 
 export const BUILT_IN_PRESET_NAME = 'Moonlit Echoes - by Rivelle';
 const LEGACY_BUILT_IN_PRESET_NAMES = new Set(['Default', 'Moonlit Echoes']);
@@ -35,6 +36,7 @@ function generateDefaultSettings() {
         settings[setting.varId] = setting.default;
         settings.presets[BUILT_IN_PRESET_NAME][setting.varId] = setting.default;
     });
+    seedRegexAgentPresets(settings, settings.presets[BUILT_IN_PRESET_NAME]);
 
     return Object.freeze(settings);
 }
@@ -75,6 +77,21 @@ export function ensureSettingsStructure(settings) {
         });
     }
 
+    if (settings.presets['Moonlit Echoes']) {
+        if (!settings.presets[BUILT_IN_PRESET_NAME]) {
+            settings.presets[BUILT_IN_PRESET_NAME] = settings.presets['Moonlit Echoes'];
+        }
+
+        delete settings.presets['Moonlit Echoes'];
+
+        if (settings.activePreset === 'Moonlit Echoes') {
+            settings.activePreset = BUILT_IN_PRESET_NAME;
+        }
+    }
+
+    const defaultPreset = Object.fromEntries(themeCustomSettings.map(({ varId, default: value }) => [varId, value]));
+    seedRegexAgentPresets(settings, defaultPreset);
+
     // Backfill any newly added settings into every existing preset so older
     // presets stay in sync with the current setting catalogue. Prefer the
     // live top-level value when present, otherwise fall back to the default.
@@ -92,18 +109,6 @@ export function ensureSettingsStructure(settings) {
     });
 
     settings.activePreset = resolveActivePresetName(settings.presets, settings.activePreset);
-
-    if (settings.presets["Moonlit Echoes"]) {
-        if (!settings.presets[BUILT_IN_PRESET_NAME]) {
-            settings.presets[BUILT_IN_PRESET_NAME] = settings.presets["Moonlit Echoes"];
-        }
-
-        delete settings.presets["Moonlit Echoes"];
-
-        if (settings.activePreset === "Moonlit Echoes") {
-            settings.activePreset = BUILT_IN_PRESET_NAME;
-        }
-    }
 
     migrateMessageLineHeightFallback(settings);
 }

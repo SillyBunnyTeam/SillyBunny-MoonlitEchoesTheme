@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Dungeon Slate - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(251, 251, 253, 1)",
+    "customThemeColor2": "rgba(251, 251, 253, 1)",
+    "customBgColor1": "rgba(62, 47, 34, 1)",
+    "customBgColor2": "rgba(47, 45, 43, 1)",
+    "customTopBarColor": "rgba(56, 43, 34, 1)",
+    "Drawer-iconColor": "rgba(232, 180, 120, 1)",
+    "sheldBackgroundColor": "rgba(38, 35, 33, 1)",
+    "customScrollbarColor": "rgba(216, 122, 44, 0.42)",
+    "customlastInContext": "3px solid rgba(251, 251, 253, 1)",
+    "rawCustomCss": ""
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Hazard Console - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(255, 204, 51, 1)",
+    "customThemeColor2": "rgba(251, 251, 253, 1)",
+    "customBgColor1": "rgba(64, 60, 33, 1)",
+    "customBgColor2": "rgba(44, 43, 30, 1)",
+    "customTopBarColor": "rgba(54, 52, 32, 1)",
+    "Drawer-iconColor": "rgba(255, 227, 107, 1)",
+    "sheldBackgroundColor": "rgba(30, 33, 28, 1)",
+    "customScrollbarColor": "rgba(255, 204, 51, 0.5)",
+    "customlastInContext": "3px dashed rgba(255, 204, 51, 1)",
+    "rawCustomCss": ""
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "name": "Bauhaus Poster - by platberlitz",
+  "main_text_color": "rgba(43, 43, 43, 1)",
+  "italics_text_color": "rgba(17, 19, 24, 1)",
+  "underline_text_color": "rgba(36, 91, 120, 1)",
+  "quote_text_color": "rgba(17, 19, 24, 1)",
+  "blur_tint_color": "rgba(255, 253, 243, 1)",
+  "chat_tint_color": "rgba(241, 238, 228, 1)",
+  "user_mes_blur_tint_color": "rgba(232, 223, 225, 1)",
+  "bot_mes_blur_tint_color": "rgba(251, 250, 241, 1)",
+  "shadow_color": "rgba(0, 0, 0, 0)",
+  "border_color": "rgba(201, 196, 183, 1)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(248, 246, 236, 1)",
+  "custom_css": ""
+}

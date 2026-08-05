@@ -1,0 +1,18 @@
+{
+  "name": "Construction Paper - by platberlitz",
+  "main_text_color": "rgba(234, 223, 206, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(255, 107, 90, 1)",
+  "quote_text_color": "rgba(255, 184, 62, 1)",
+  "blur_tint_color": "rgba(36, 28, 32, 1)",
+  "chat_tint_color": "rgba(51, 33, 38, 1)",
+  "user_mes_blur_tint_color": "rgba(75, 42, 42, 1)",
+  "bot_mes_blur_tint_color": "rgba(56, 43, 45, 1)",
+  "shadow_color": "rgba(21, 16, 20, 1)",
+  "border_color": "rgba(255, 240, 207, 0.16)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(44, 31, 35, 1)",
+  "custom_css": ""
+}

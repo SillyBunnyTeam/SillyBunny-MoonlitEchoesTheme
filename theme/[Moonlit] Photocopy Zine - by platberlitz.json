@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Photocopy Zine - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(166, 32, 84, 1)",
+    "customThemeColor2": "rgba(22, 21, 26, 1)",
+    "customBgColor1": "rgba(240, 220, 228, 1)",
+    "customBgColor2": "rgba(248, 247, 240, 1)",
+    "customTopBarColor": "rgba(232, 230, 221, 1)",
+    "Drawer-iconColor": "rgba(23, 21, 26, 1)",
+    "sheldBackgroundColor": "rgba(244, 242, 235, 1)",
+    "customScrollbarColor": "rgba(23, 21, 26, 1)",
+    "customlastInContext": "3px dashed rgba(166, 32, 84, 1)",
+    "rawCustomCss": ""
+  }
+}

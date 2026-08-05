@@ -3088,7 +3088,7 @@ body.bubblechat {
 }
 
 #top-bar {
-    background: var(--sb-topbar-surface-bg, color-mix(in srgb, var(--SmartThemeBlurTintColor) 92%, transparent)) !important;
+    background: var(--customTopBarColor, var(--sb-topbar-surface-bg, color-mix(in srgb, var(--SmartThemeBlurTintColor) 92%, transparent))) !important;
     border-color: var(--sb-shell-border, color-mix(in srgb, var(--SmartThemeBorderColor) 78%, transparent)) !important;
 }
 

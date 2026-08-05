@@ -1,0 +1,18 @@
+{
+  "name": "Storm Charge - by platberlitz",
+  "main_text_color": "rgba(220, 231, 241, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(158, 184, 233, 1)",
+  "quote_text_color": "rgba(100, 185, 255, 1)",
+  "blur_tint_color": "rgba(17, 26, 40, 1)",
+  "chat_tint_color": "rgba(27, 41, 61, 1)",
+  "user_mes_blur_tint_color": "rgba(26, 50, 79, 1)",
+  "bot_mes_blur_tint_color": "rgba(29, 43, 62, 1)",
+  "shadow_color": "rgba(2, 9, 18, 0.5)",
+  "border_color": "rgba(100, 185, 255, 0.22)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(22, 34, 51, 1)",
+  "custom_css": ""
+}

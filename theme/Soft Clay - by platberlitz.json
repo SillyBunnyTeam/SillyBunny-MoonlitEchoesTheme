@@ -1,0 +1,18 @@
+{
+  "name": "Soft Clay - by platberlitz",
+  "main_text_color": "rgba(77, 57, 50, 1)",
+  "italics_text_color": "rgba(17, 19, 24, 1)",
+  "underline_text_color": "rgba(17, 19, 24, 1)",
+  "quote_text_color": "rgba(17, 19, 24, 1)",
+  "blur_tint_color": "rgba(255, 247, 236, 1)",
+  "chat_tint_color": "rgba(244, 226, 211, 1)",
+  "user_mes_blur_tint_color": "rgba(238, 210, 195, 1)",
+  "bot_mes_blur_tint_color": "rgba(255, 250, 242, 1)",
+  "shadow_color": "rgba(120, 69, 45, 0.16)",
+  "border_color": "rgba(226, 196, 178, 1)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(250, 237, 224, 1)",
+  "custom_css": ""
+}

@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "DOS Cobalt - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(255, 255, 255, 1)",
+    "customThemeColor2": "rgba(185, 212, 255, 1)",
+    "customBgColor1": "rgba(23, 70, 157, 1)",
+    "customBgColor2": "rgba(15, 44, 121, 1)",
+    "customTopBarColor": "rgba(20, 56, 141, 1)",
+    "Drawer-iconColor": "rgba(255, 255, 255, 1)",
+    "sheldBackgroundColor": "rgba(12, 34, 101, 1)",
+    "customScrollbarColor": "rgba(167, 199, 255, 1)",
+    "customlastInContext": "4px solid rgba(255, 255, 255, 1)",
+    "rawCustomCss": ""
+  }
+}

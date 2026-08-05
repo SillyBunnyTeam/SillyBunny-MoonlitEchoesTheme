@@ -1,0 +1,18 @@
+{
+  "name": "Midnight Kawaii - by platberlitz",
+  "main_text_color": "rgba(228, 224, 244, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(142, 233, 225, 1)",
+  "quote_text_color": "rgba(208, 185, 255, 1)",
+  "blur_tint_color": "rgba(14, 20, 48, 1)",
+  "chat_tint_color": "rgba(24, 24, 59, 1)",
+  "user_mes_blur_tint_color": "rgba(39, 37, 79, 1)",
+  "bot_mes_blur_tint_color": "rgba(31, 33, 66, 1)",
+  "shadow_color": "rgba(4, 7, 28, 0.48)",
+  "border_color": "rgba(142, 233, 225, 0.22)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(19, 22, 54, 1)",
+  "custom_css": ""
+}

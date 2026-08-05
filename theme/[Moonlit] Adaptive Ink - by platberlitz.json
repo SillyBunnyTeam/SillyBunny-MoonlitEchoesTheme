@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Adaptive Ink - by platberlitz",
+  "settings": {
+    "customThemeColor": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 88%, var(--SmartThemeBodyColor, #f8f8f2))",
+    "customThemeColor2": "color-mix(in srgb, var(--SmartThemeEmColor, #8be9fd) 80%, var(--SmartThemeBodyColor, #f8f8f2))",
+    "customBgColor1": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 10%, transparent)",
+    "customBgColor2": "transparent",
+    "customTopBarColor": "transparent",
+    "Drawer-iconColor": "var(--SmartThemeBodyColor, #f8f8f2)",
+    "sheldBackgroundColor": "transparent",
+    "customScrollbarColor": "color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 48%, transparent)",
+    "customlastInContext": "none",
+    "rawCustomCss": ""
+  }
+}

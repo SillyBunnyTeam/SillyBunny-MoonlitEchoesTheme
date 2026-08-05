@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Paper Minimal - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(74, 111, 165, 1)",
+    "customThemeColor2": "rgba(107, 107, 102, 1)",
+    "customBgColor1": "rgba(242, 242, 238, 1)",
+    "customBgColor2": "rgba(250, 250, 248, 1)",
+    "customTopBarColor": "rgba(248, 248, 245, 1)",
+    "Drawer-iconColor": "rgba(44, 44, 42, 1)",
+    "sheldBackgroundColor": "rgba(254, 254, 254, 1)",
+    "customScrollbarColor": "rgba(226, 226, 221, 1)",
+    "customlastInContext": "2px solid rgba(74, 111, 165, 1)",
+    "rawCustomCss": ""
+  }
+}

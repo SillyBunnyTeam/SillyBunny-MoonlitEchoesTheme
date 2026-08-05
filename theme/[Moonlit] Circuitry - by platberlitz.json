@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Circuitry - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(212, 175, 55, 1)",
+    "customThemeColor2": "rgba(113, 199, 168, 1)",
+    "customBgColor1": "rgba(34, 54, 32, 1)",
+    "customBgColor2": "rgba(19, 44, 30, 1)",
+    "customTopBarColor": "rgba(29, 43, 32, 1)",
+    "Drawer-iconColor": "rgba(212, 175, 55, 1)",
+    "sheldBackgroundColor": "rgba(7, 36, 28, 1)",
+    "customScrollbarColor": "rgba(212, 175, 55, 0.45)",
+    "customlastInContext": "2px solid rgba(212, 175, 55, 1)",
+    "rawCustomCss": ""
+  }
+}

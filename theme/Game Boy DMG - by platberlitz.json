@@ -1,0 +1,18 @@
+{
+  "name": "Game Boy DMG - by platberlitz",
+  "main_text_color": "rgba(251, 251, 253, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(251, 251, 253, 1)",
+  "quote_text_color": "rgba(251, 251, 253, 1)",
+  "blur_tint_color": "rgba(58, 72, 6, 1)",
+  "chat_tint_color": "rgba(58, 72, 6, 1)",
+  "user_mes_blur_tint_color": "rgba(20, 41, 20, 1)",
+  "bot_mes_blur_tint_color": "rgba(65, 79, 6, 1)",
+  "shadow_color": "rgba(0, 0, 0, 0)",
+  "border_color": "rgba(15, 56, 15, 1)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(58, 72, 6, 1)",
+  "custom_css": ""
+}

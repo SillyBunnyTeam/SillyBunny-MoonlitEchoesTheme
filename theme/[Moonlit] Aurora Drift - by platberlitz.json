@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Aurora Drift - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(125, 227, 238, 1)",
+    "customThemeColor2": "rgba(177, 140, 255, 1)",
+    "customBgColor1": "rgba(39, 39, 79, 1)",
+    "customBgColor2": "rgba(24, 37, 64, 1)",
+    "customTopBarColor": "rgba(29, 28, 62, 1)",
+    "Drawer-iconColor": "rgba(217, 248, 255, 1)",
+    "sheldBackgroundColor": "rgba(16, 23, 51, 1)",
+    "customScrollbarColor": "rgba(125, 227, 238, 0.46)",
+    "customlastInContext": "3px solid rgba(125, 227, 238, 1)",
+    "rawCustomCss": ""
+  }
+}

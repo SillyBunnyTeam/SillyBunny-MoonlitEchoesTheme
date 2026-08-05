@@ -35,6 +35,21 @@ Users can now easily share color schemes and themes based on Moonlit Echoes Them
 
 <img src=".github/SillyBunnyPreview/theme-presets.png" width="400">
 
+#### Bundled Regex Agent Theme Palettes
+
+Moonlit Echoes includes palette companions for all 78 themes from [SillyBunny Regex Agent Themes](https://github.com/SillyBunnyTeam/SillyBunny-Regex-Agent-Themes): 37 light, 38 dark, and 3 adaptive. They are added to the Moonlit preset menu once without replacing the active preset or any existing preset with the same name. Deleting one keeps it deleted on later starts.
+
+Each preset is also available as an individual `[Moonlit] ...json` file in [`theme/`](theme/). The 75 fixed light and dark presets have matching unprefixed SillyBunny UI theme files in the same folder. Import those separately in User Settings to enable exact-name UI theme synchronization. The 3 adaptive presets intentionally have no UI companion because they follow the currently active SillyBunny colors.
+
+These companions translate palettes only. Regex Agent Themes remains responsible for its tracker-local typography, frames, ornaments, scanlines, and animation. Both projects are AGPL-3.0, and generated names retain the source author credit.
+
+Regenerate or verify the committed catalog from sibling checkouts with:
+
+```bash
+node tools/generate-regex-agent-presets.mjs
+node tools/generate-regex-agent-presets.mjs --check
+```
+
 ## Screenshots
 
 The screenshots below were taken in **SillyBunny v1.7.0** running this fork, with Rivelle's **"Glimmer (微光)"** UI theme and its matching Moonlit preset applied. They are captured, not composed—[`tools/capture-sillybunny-screenshots.js`](tools/capture-sillybunny-screenshots.js) drives a real SillyBunny instance and reproduces the whole set.

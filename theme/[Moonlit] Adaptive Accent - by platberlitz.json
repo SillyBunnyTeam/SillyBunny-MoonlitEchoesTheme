@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Adaptive Accent - by platberlitz",
+  "settings": {
+    "customThemeColor": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 94%, var(--SmartThemeBodyColor, #f8f8f2))",
+    "customThemeColor2": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 82%, var(--SmartThemeBodyColor, #f8f8f2))",
+    "customBgColor1": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 18%, transparent)",
+    "customBgColor2": "color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 6%, transparent)",
+    "customTopBarColor": "color-mix(in srgb, color-mix(in srgb, var(--SmartThemeBlurTintColor, #1b1d24) 94%, transparent) 50%, color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 34%, var(--SmartThemeBlurTintColor, #1b1d24)))",
+    "Drawer-iconColor": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 34%, var(--SmartThemeBodyColor, #f8f8f2))",
+    "sheldBackgroundColor": "color-mix(in srgb, color-mix(in srgb, var(--SmartThemeBlurTintColor, #1b1d24) 92%, transparent) 50%, color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 6%, var(--SmartThemeBlurTintColor, #1b1d24)))",
+    "customScrollbarColor": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 46%, transparent)",
+    "customlastInContext": "4px solid color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 94%, var(--SmartThemeBodyColor, #f8f8f2))",
+    "rawCustomCss": ""
+  }
+}

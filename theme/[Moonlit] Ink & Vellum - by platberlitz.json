@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Ink & Vellum - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(91, 74, 47, 1)",
+    "customThemeColor2": "rgba(122, 92, 58, 1)",
+    "customBgColor1": "rgba(240, 232, 214, 1)",
+    "customBgColor2": "rgba(253, 250, 243, 1)",
+    "customTopBarColor": "rgba(241, 234, 217, 1)",
+    "Drawer-iconColor": "rgba(27, 26, 23, 1)",
+    "sheldBackgroundColor": "rgba(249, 244, 231, 1)",
+    "customScrollbarColor": "rgba(138, 127, 104, 1)",
+    "customlastInContext": "2px solid rgba(91, 74, 47, 1)",
+    "rawCustomCss": ""
+  }
+}

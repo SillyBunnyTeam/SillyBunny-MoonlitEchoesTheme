@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Vaporwave Sunset - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(255, 46, 147, 1)",
+    "customThemeColor2": "rgba(0, 255, 224, 1)",
+    "customBgColor1": "rgba(7, 18, 27, 1)",
+    "customBgColor2": "rgba(15, 11, 23, 1)",
+    "customTopBarColor": "rgba(63, 13, 49, 1)",
+    "Drawer-iconColor": "rgba(255, 230, 255, 1)",
+    "sheldBackgroundColor": "rgba(19, 10, 39, 1)",
+    "customScrollbarColor": "rgba(0, 255, 224, 0.45)",
+    "customlastInContext": "3px solid rgba(255, 46, 147, 1)",
+    "rawCustomCss": ""
+  }
+}

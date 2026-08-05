@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Construction Paper - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(255, 184, 62, 1)",
+    "customThemeColor2": "rgba(255, 107, 90, 1)",
+    "customBgColor1": "rgba(75, 42, 42, 1)",
+    "customBgColor2": "rgba(56, 43, 45, 1)",
+    "customTopBarColor": "rgba(76, 42, 47, 1)",
+    "Drawer-iconColor": "rgba(255, 240, 201, 1)",
+    "sheldBackgroundColor": "rgba(44, 31, 35, 1)",
+    "customScrollbarColor": "rgba(255, 184, 62, 0.52)",
+    "customlastInContext": "5px solid rgba(255, 184, 62, 1)",
+    "rawCustomCss": ""
+  }
+}

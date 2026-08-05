@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Firefly Glow - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(198, 232, 120, 1)",
+    "customThemeColor2": "rgba(244, 195, 95, 1)",
+    "customBgColor1": "rgba(52, 56, 32, 1)",
+    "customBgColor2": "rgba(32, 46, 31, 1)",
+    "customTopBarColor": "rgba(41, 49, 32, 1)",
+    "Drawer-iconColor": "rgba(233, 246, 206, 1)",
+    "sheldBackgroundColor": "rgba(21, 34, 25, 1)",
+    "customScrollbarColor": "rgba(198, 232, 120, 0.44)",
+    "customlastInContext": "3px solid rgba(198, 232, 120, 1)",
+    "rawCustomCss": ""
+  }
+}

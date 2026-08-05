@@ -1,0 +1,18 @@
+{
+  "name": "Dungeon Slate - by platberlitz",
+  "main_text_color": "rgba(212, 206, 196, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(251, 251, 253, 1)",
+  "quote_text_color": "rgba(251, 251, 253, 1)",
+  "blur_tint_color": "rgba(33, 31, 29, 1)",
+  "chat_tint_color": "rgba(42, 39, 36, 1)",
+  "user_mes_blur_tint_color": "rgba(62, 47, 34, 1)",
+  "bot_mes_blur_tint_color": "rgba(47, 45, 43, 1)",
+  "shadow_color": "rgba(0, 0, 0, 0.5)",
+  "border_color": "rgba(255, 255, 255, 0.12)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(38, 35, 33, 1)",
+  "custom_css": ""
+}

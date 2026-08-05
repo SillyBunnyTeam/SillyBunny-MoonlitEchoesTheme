@@ -2,7 +2,7 @@ import { t } from '../../../../../i18n.js';
 import { EXTENSION_FOLDER_PATH } from '../config/theme-info.js';
 import { themeCustomSettings } from '../config/theme-settings.js';
 import { getSettings as getExtensionSettings, saveSettings as saveExtensionSettings } from '../services/settings-service.js';
-import { rgbaToHex, getAlphaFromRgba, hexToRgba, parseColorValue } from '../utils/color.js';
+import { rgbaToHex, hexToRgba, parseColorValue } from '../utils/color.js';
 
 const SETTINGS_STYLES_ID = 'moonlit-modern-styles';
 const SETTINGS_STYLES_URL = new URL('./settings-factory.css', import.meta.url).href;
@@ -170,8 +170,10 @@ function createColorPicker(container, setting, settings) {
     const context = SillyTavern.getContext();
     const { varId, default: defaultValue } = setting;
     const currentValue = settings[varId] || defaultValue;
-    const initialHexValue = rgbaToHex(currentValue);
-    const initialAlphaValue = getAlphaFromRgba(currentValue);
+    const literalColor = parseColorValue(currentValue);
+    const initialColor = literalColor || parseCssColorValue(currentValue);
+    const initialHexValue = initialColor?.hex;
+    const initialAlphaValue = initialColor?.alpha ?? 1;
 
     const colorPickerContainer = document.createElement('div');
     colorPickerContainer.classList.add('theme-color-picker');
@@ -197,7 +199,7 @@ function createColorPicker(container, setting, settings) {
     const textInput = document.createElement('input');
     textInput.id = `cts-${varId}-text`;
     textInput.type = 'text';
-    textInput.value = initialHexValue || currentValue;
+    textInput.value = literalColor?.hex || currentValue;
     textInput.classList.add('color-input-text');
     textInput.style.flex = '1';
     textInput.style.minWidth = '80px';
@@ -691,38 +693,35 @@ export function updateSettingsUI() {
 }
 
 export function updateColorPickerUI(varId, value) {
+    const literalColor = parseColorValue(value);
+    const resolvedColor = literalColor || parseCssColorValue(value);
     const colorPreview = document.querySelector(`#cts-${varId}-preview`);
     if (colorPreview) {
         colorPreview.style.background = value;
     }
 
     const colorPicker = document.querySelector(`#cts-${varId}-color`);
-    if (colorPicker) {
-        const hexValue = rgbaToHex(value);
-        if (hexValue) {
-            colorPicker.value = hexValue;
-        }
+    if (colorPicker && resolvedColor) {
+        colorPicker.value = resolvedColor.hex;
     }
 
     const textInput = document.querySelector(`#cts-${varId}-text`);
     if (textInput) {
-        const hexValue = rgbaToHex(value);
-        textInput.value = hexValue || value;
+        textInput.value = literalColor?.hex || value;
     }
 
     const alphaSlider = document.querySelector(`#cts-${varId}-alpha`);
     const alphaValue = document.querySelector(`#cts-${varId}-alpha-value`);
 
     if (alphaSlider && alphaValue) {
-        const alpha = getAlphaFromRgba(value);
+        const alpha = resolvedColor?.alpha ?? 1;
         const alphaPercent = Math.round(alpha * 100);
         alphaSlider.value = alphaPercent;
         alphaValue.textContent = alphaPercent;
 
-        const hexColor = rgbaToHex(value);
-        if (hexColor) {
+        if (resolvedColor) {
             setTimeout(() => {
-                updateColorSliderThumb(varId, hexColor);
+                updateColorSliderThumb(varId, resolvedColor.hex);
             }, 10);
         }
     }

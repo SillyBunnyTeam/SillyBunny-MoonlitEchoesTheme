@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Midnight Kawaii - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(208, 185, 255, 1)",
+    "customThemeColor2": "rgba(142, 233, 225, 1)",
+    "customBgColor1": "rgba(39, 37, 79, 1)",
+    "customBgColor2": "rgba(31, 33, 66, 1)",
+    "customTopBarColor": "rgba(35, 31, 73, 1)",
+    "Drawer-iconColor": "rgba(243, 237, 255, 1)",
+    "sheldBackgroundColor": "rgba(19, 22, 54, 1)",
+    "customScrollbarColor": "rgba(208, 185, 255, 0.48)",
+    "customlastInContext": "3px solid rgba(208, 185, 255, 1)",
+    "rawCustomCss": ""
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Comet Trail - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(156, 220, 255, 1)",
+    "customThemeColor2": "rgba(241, 198, 110, 1)",
+    "customBgColor1": "rgba(51, 53, 55, 1)",
+    "customBgColor2": "rgba(32, 43, 60, 1)",
+    "customTopBarColor": "rgba(51, 49, 53, 1)",
+    "Drawer-iconColor": "rgba(233, 246, 255, 1)",
+    "sheldBackgroundColor": "rgba(23, 32, 48, 1)",
+    "customScrollbarColor": "rgba(156, 220, 255, 0.44)",
+    "customlastInContext": "3px solid rgba(156, 220, 255, 1)",
+    "rawCustomCss": ""
+  }
+}

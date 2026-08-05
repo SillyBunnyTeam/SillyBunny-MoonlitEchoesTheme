@@ -1,0 +1,18 @@
+{
+  "name": "Aurora Drift - by platberlitz",
+  "main_text_color": "rgba(228, 233, 247, 1)",
+  "italics_text_color": "rgba(154, 167, 199, 1)",
+  "underline_text_color": "rgba(177, 140, 255, 1)",
+  "quote_text_color": "rgba(125, 227, 238, 1)",
+  "blur_tint_color": "rgba(11, 17, 40, 1)",
+  "chat_tint_color": "rgba(21, 29, 61, 1)",
+  "user_mes_blur_tint_color": "rgba(39, 39, 79, 1)",
+  "bot_mes_blur_tint_color": "rgba(24, 37, 64, 1)",
+  "shadow_color": "rgba(6, 10, 34, 0.46)",
+  "border_color": "rgba(177, 140, 255, 0.25)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(16, 23, 51, 1)",
+  "custom_css": ""
+}

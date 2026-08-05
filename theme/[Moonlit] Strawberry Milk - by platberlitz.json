@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Strawberry Milk - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(17, 19, 24, 1)",
+    "customThemeColor2": "rgba(17, 19, 24, 1)",
+    "customBgColor1": "rgba(255, 234, 240, 1)",
+    "customBgColor2": "rgba(255, 250, 252, 1)",
+    "customTopBarColor": "rgba(255, 210, 223, 1)",
+    "Drawer-iconColor": "rgba(17, 19, 24, 1)",
+    "sheldBackgroundColor": "rgba(255, 251, 252, 1)",
+    "customScrollbarColor": "rgba(247, 168, 192, 1)",
+    "customlastInContext": "3px dashed rgba(17, 19, 24, 1)",
+    "rawCustomCss": ""
+  }
+}

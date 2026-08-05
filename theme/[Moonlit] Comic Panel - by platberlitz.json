@@ -1,0 +1,17 @@
+{
+  "moonlitEchoesPreset": true,
+  "presetVersion": "3.2.0-sb13",
+  "presetName": "Comic Panel - by platberlitz",
+  "settings": {
+    "customThemeColor": "rgba(198, 40, 40, 1)",
+    "customThemeColor2": "rgba(21, 101, 192, 1)",
+    "customBgColor1": "rgba(255, 238, 186, 1)",
+    "customBgColor2": "rgba(255, 253, 246, 1)",
+    "customTopBarColor": "rgba(255, 230, 129, 1)",
+    "Drawer-iconColor": "rgba(22, 19, 10, 1)",
+    "sheldBackgroundColor": "rgba(255, 254, 250, 1)",
+    "customScrollbarColor": "rgba(26, 26, 26, 1)",
+    "customlastInContext": "5px solid rgba(198, 40, 40, 1)",
+    "rawCustomCss": ""
+  }
+}

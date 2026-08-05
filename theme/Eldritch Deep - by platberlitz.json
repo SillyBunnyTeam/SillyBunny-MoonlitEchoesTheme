@@ -1,0 +1,18 @@
+{
+  "name": "Eldritch Deep - by platberlitz",
+  "main_text_color": "rgba(207, 228, 232, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(167, 139, 250, 1)",
+  "quote_text_color": "rgba(124, 232, 220, 1)",
+  "blur_tint_color": "rgba(5, 18, 26, 1)",
+  "chat_tint_color": "rgba(10, 28, 38, 1)",
+  "user_mes_blur_tint_color": "rgba(25, 28, 63, 1)",
+  "bot_mes_blur_tint_color": "rgba(7, 34, 41, 1)",
+  "shadow_color": "rgba(124, 58, 237, 0.28)",
+  "border_color": "rgba(124, 58, 237, 0.24)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(8, 23, 32, 1)",
+  "custom_css": ""
+}

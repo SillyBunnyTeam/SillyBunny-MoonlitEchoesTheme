@@ -1,0 +1,18 @@
+{
+  "name": "Cassette Future - by platberlitz",
+  "main_text_color": "rgba(231, 221, 211, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(130, 200, 196, 1)",
+  "quote_text_color": "rgba(241, 154, 90, 1)",
+  "blur_tint_color": "rgba(29, 29, 35, 1)",
+  "chat_tint_color": "rgba(45, 41, 46, 1)",
+  "user_mes_blur_tint_color": "rgba(66, 50, 46, 1)",
+  "bot_mes_blur_tint_color": "rgba(50, 46, 49, 1)",
+  "shadow_color": "rgba(0, 0, 0, 0.44)",
+  "border_color": "rgba(255, 226, 188, 0.18)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(37, 35, 41, 1)",
+  "custom_css": ""
+}

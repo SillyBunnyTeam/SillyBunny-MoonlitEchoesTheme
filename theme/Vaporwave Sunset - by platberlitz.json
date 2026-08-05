@@ -1,0 +1,18 @@
+{
+  "name": "Vaporwave Sunset - by platberlitz",
+  "main_text_color": "rgba(251, 251, 253, 1)",
+  "italics_text_color": "rgba(251, 251, 253, 1)",
+  "underline_text_color": "rgba(0, 255, 224, 1)",
+  "quote_text_color": "rgba(255, 46, 147, 1)",
+  "blur_tint_color": "rgba(13, 8, 32, 1)",
+  "chat_tint_color": "rgba(25, 12, 45, 1)",
+  "user_mes_blur_tint_color": "rgba(7, 18, 27, 1)",
+  "bot_mes_blur_tint_color": "rgba(15, 11, 23, 1)",
+  "shadow_color": "rgba(255, 46, 147, 0.3)",
+  "border_color": "rgba(255, 46, 147, 0.28)",
+  "customCSS-bg-blur": 3,
+  "customCSS-bg-opacity": 1,
+  "sheldBlurStrength": 5,
+  "sheldBackgroundColor": "rgba(19, 10, 39, 1)",
+  "custom_css": ""
+}
