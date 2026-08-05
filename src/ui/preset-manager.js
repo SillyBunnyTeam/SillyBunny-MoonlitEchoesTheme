@@ -1,4 +1,5 @@
 import { themeCustomSettings as defaultThemeCustomSettings } from '../config/theme-settings.js';
+import { installRegexAgentUiThemes } from '../services/ui-theme-installer.js';
 import {
     BUILT_IN_PRESET_NAME,
     isBuiltInPresetName,
@@ -256,6 +257,14 @@ export function createPresetManagerUI(container, settingsOverride) {
     deleteButton.addEventListener('click', deleteCurrentPreset);
     buttonsRow.appendChild(deleteButton);
 
+    const installUiThemesButton = document.createElement('button');
+    installUiThemesButton.id = 'moonlit-install-ui-themes';
+    installUiThemesButton.classList.add('menu_button');
+    installUiThemesButton.title = t`Install Bundled UI Themes`;
+    installUiThemesButton.innerHTML = '<i class="fa-solid fa-palette"></i>';
+    installUiThemesButton.addEventListener('click', installBundledUiThemes);
+    buttonsRow.appendChild(installUiThemesButton);
+
     presetManagerContainer.appendChild(buttonsRow);
 
     const fileInput = document.createElement('input');
@@ -295,6 +304,16 @@ function handlePresetFileSelected(event) {
     };
 
     reader.readAsText(file);
+}
+
+export async function installBundledUiThemes() {
+    const t = managerConfig.t;
+    try {
+        const { installed, skipped } = await installRegexAgentUiThemes();
+        toastr.success(t`Installed ${installed} UI themes (${skipped} already present). Reload SillyBunny to use them.`);
+    } catch (error) {
+        toastr.error(t`Unable to install the bundled UI themes`);
+    }
 }
 
 export function importPreset() {

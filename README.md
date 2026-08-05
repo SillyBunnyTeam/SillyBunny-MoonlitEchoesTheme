@@ -39,7 +39,9 @@ Users can now easily share color schemes and themes based on Moonlit Echoes Them
 
 Moonlit Echoes includes palette companions for all 78 themes from [SillyBunny Regex Agent Themes](https://github.com/SillyBunnyTeam/SillyBunny-Regex-Agent-Themes): 37 light, 38 dark, and 3 adaptive. They are added to the Moonlit preset menu once without replacing the active preset or any existing preset with the same name. Deleting one keeps it deleted on later starts.
 
-Each preset is also available as an individual `[Moonlit] ...json` file in [`theme/`](theme/). The 75 fixed light and dark presets have matching unprefixed SillyBunny UI theme files in the same folder. SillyBunny does not scan an extension's theme folder, so import those files separately in User Settings to enable exact-name UI theme synchronization. The 3 adaptive presets intentionally have no UI companion because they follow the currently active SillyBunny colors.
+The 75 fixed light and dark presets have matching SillyBunny UI themes. Use the palette button in the Moonlit preset toolbar to install all of them at once, then reload SillyBunny; existing themes with the same name are never overwritten. The 3 adaptive presets intentionally have no UI companion because they follow the currently active SillyBunny colors.
+
+Every preset is also available as an individual `[Moonlit] ...json` file in [`theme/`](theme/), alongside the unprefixed UI theme files, for manual import or sharing.
 
 These companions translate palettes only. Regex Agent Themes remains responsible for its tracker-local typography, frames, ornaments, scanlines, and animation. Both projects are AGPL-3.0, and generated names retain the source author credit.
 
