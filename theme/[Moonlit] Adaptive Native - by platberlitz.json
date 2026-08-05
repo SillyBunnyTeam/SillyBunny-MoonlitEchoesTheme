@@ -7,9 +7,9 @@
     "customThemeColor2": "color-mix(in srgb, var(--SmartThemeEmColor, #8be9fd) 80%, var(--SmartThemeBodyColor, #f8f8f2))",
     "customBgColor1": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 12%, transparent)",
     "customBgColor2": "color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 6%, transparent)",
-    "customTopBarColor": "color-mix(in srgb, color-mix(in srgb, var(--SmartThemeBlurTintColor, #1b1d24) 94%, transparent) 50%, color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 20%, var(--SmartThemeBlurTintColor, #1b1d24)))",
+    "customTopBarColor": "color-mix(in srgb, color-mix(in srgb, color-mix(in srgb, var(--SmartThemeBlurTintColor, #1b1d24) 94%, transparent) 50%, color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 20%, var(--SmartThemeBlurTintColor, #1b1d24))) 70%, transparent)",
     "Drawer-iconColor": "var(--SmartThemeBodyColor, #f8f8f2)",
-    "sheldBackgroundColor": "color-mix(in srgb, color-mix(in srgb, var(--SmartThemeBlurTintColor, #1b1d24) 92%, transparent) 50%, color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 6%, var(--SmartThemeBlurTintColor, #1b1d24)))",
+    "sheldBackgroundColor": "color-mix(in srgb, color-mix(in srgb, color-mix(in srgb, var(--SmartThemeBlurTintColor, #1b1d24) 92%, transparent) 50%, color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 6%, var(--SmartThemeBlurTintColor, #1b1d24))) 20%, transparent)",
     "customScrollbarColor": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 32%, transparent)",
     "customlastInContext": "3px solid color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 88%, var(--SmartThemeBodyColor, #f8f8f2))",
     "rawCustomCss": ""

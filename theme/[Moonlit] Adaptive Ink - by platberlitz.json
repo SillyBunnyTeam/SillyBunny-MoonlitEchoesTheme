@@ -7,9 +7,9 @@
     "customThemeColor2": "color-mix(in srgb, var(--SmartThemeEmColor, #8be9fd) 80%, var(--SmartThemeBodyColor, #f8f8f2))",
     "customBgColor1": "color-mix(in srgb, var(--SmartThemeQuoteColor, #bd93f9) 10%, transparent)",
     "customBgColor2": "transparent",
-    "customTopBarColor": "transparent",
+    "customTopBarColor": "color-mix(in srgb, transparent 70%, transparent)",
     "Drawer-iconColor": "var(--SmartThemeBodyColor, #f8f8f2)",
-    "sheldBackgroundColor": "transparent",
+    "sheldBackgroundColor": "color-mix(in srgb, transparent 20%, transparent)",
     "customScrollbarColor": "color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 48%, transparent)",
     "customlastInContext": "none",
     "rawCustomCss": ""

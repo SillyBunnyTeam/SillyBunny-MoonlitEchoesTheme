@@ -5,11 +5,11 @@
   "settings": {
     "customThemeColor": "rgba(255, 176, 0, 1)",
     "customThemeColor2": "rgba(224, 144, 0, 1)",
-    "customBgColor1": "rgba(46, 31, 0, 1)",
-    "customBgColor2": "rgba(27, 18, 0, 1)",
-    "customTopBarColor": "rgba(33, 26, 12, 1)",
+    "customBgColor1": "rgba(46, 31, 0, 0.1)",
+    "customBgColor2": "rgba(27, 18, 0, 0.05)",
+    "customTopBarColor": "rgba(33, 26, 12, 0.7)",
     "Drawer-iconColor": "rgba(255, 176, 0, 1)",
-    "sheldBackgroundColor": "rgba(12, 8, 0, 1)",
+    "sheldBackgroundColor": "rgba(12, 8, 0, 0.2)",
     "customScrollbarColor": "rgba(255, 176, 0, 0.38)",
     "customlastInContext": "2px solid rgba(255, 176, 0, 1)",
     "rawCustomCss": ""

@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const AUTHOR = 'platberlitz';
-const CATALOG_VERSION = 1;
+const CATALOG_VERSION = 2;
 const EXPECTED_MODES = { light: 37, dark: 38, adaptive: 3 };
 const SETTINGS_FILES = [
     'src/config/theme-settings-core.js',
@@ -126,9 +126,10 @@ function buildRecord(theme) {
     assert.equal(theme.name, theme.name.trim(), `${theme.slug}: padded name`);
     assert.match(name, /^[^<>:"/\\|?*\u0000-\u001f]+$/, `${theme.slug}: unsafe filename`);
 
-    return tokens.mode === 'adaptive'
-        ? { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings: adaptiveSettings(tokens), uiTheme: null }
-        : fixedRecord(theme, tokens, name);
+    if (tokens.mode !== 'adaptive') return fixedRecord(theme, tokens, name);
+
+    const { settings, migrateFromV1 } = adaptiveSettings(tokens);
+    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, migrateFromV1, uiTheme: null };
 }
 
 function fixedRecord(theme, tokens, name) {
@@ -139,14 +140,20 @@ function fixedRecord(theme, tokens, name) {
     const settings = {
         customThemeColor: primary,
         customThemeColor2: secondary,
-        customBgColor1: rgba(surfaces.rowAlt),
-        customBgColor2: rgba(surfaces.row),
-        customTopBarColor: rgba(surfaces.head),
+        customBgColor1: rgba(surfaces.rowAlt, `${theme.slug}: alternate row`, 0.1),
+        customBgColor2: rgba(surfaces.row, `${theme.slug}: row`, 0.05),
+        customTopBarColor: rgba(surfaces.head, `${theme.slug}: header`, 0.7),
         'Drawer-iconColor': rgba(tokens.on.head, `${theme.slug}: head ink`),
-        sheldBackgroundColor: rgba(surfaces.body),
+        sheldBackgroundColor: rgba(surfaces.body, `${theme.slug}: shell`, 0.2),
         customScrollbarColor: rgba(tokens.line.head, `${theme.slug}: scrollbar`),
         customlastInContext: contextMarker(tokens, primary),
         rawCustomCss: '',
+    };
+    const migrateFromV1 = {
+        customBgColor1: rgba(surfaces.rowAlt),
+        customBgColor2: rgba(surfaces.row),
+        customTopBarColor: rgba(surfaces.head),
+        sheldBackgroundColor: rgba(surfaces.body),
     };
     const uiTheme = {
         name,
@@ -154,19 +161,19 @@ function fixedRecord(theme, tokens, name) {
         italics_text_color: rgba(tokens.on.muted, `${theme.slug}: muted ink`),
         underline_text_color: secondary,
         quote_text_color: primary,
-        blur_tint_color: rgba(surfaces.bodyFrom),
-        chat_tint_color: rgba(surfaces.bodyTo),
-        user_mes_blur_tint_color: rgba(surfaces.rowAlt),
-        bot_mes_blur_tint_color: rgba(surfaces.row),
+        blur_tint_color: rgba(surfaces.bodyFrom, `${theme.slug}: blur tint`, 0.65),
+        chat_tint_color: rgba(surfaces.bodyTo, `${theme.slug}: chat tint`, 0),
+        user_mes_blur_tint_color: rgba(surfaces.rowAlt, `${theme.slug}: user tint`, 0.5),
+        bot_mes_blur_tint_color: rgba(surfaces.row, `${theme.slug}: bot tint`, 0.65),
         shadow_color: rgba(lastShadowColor(tokens.shadow.head), `${theme.slug}: shadow`),
         border_color: rgba(tokens.line.body, `${theme.slug}: border`),
         'customCSS-bg-blur': 3,
         'customCSS-bg-opacity': 1,
         sheldBlurStrength: 5,
-        sheldBackgroundColor: rgba(surfaces.body),
+        sheldBackgroundColor: rgba(surfaces.body, `${theme.slug}: UI shell`, 0),
         custom_css: '',
     };
-    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, uiTheme, surfaces };
+    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, migrateFromV1, uiTheme, surfaces };
 }
 
 function effectiveSurfaces(tokens, slug) {
@@ -195,22 +202,38 @@ function effectiveSurfaces(tokens, slug) {
 
 function adaptiveSettings(tokens) {
     const primary = tokens.accents[0];
+    const rowAlt = tokens.surface.rowAlt;
+    const row = tokens.surface.row;
+    const head = midpointExpression(tokens.surface.headFrom, tokens.surface.headTo);
+    const body = midpointExpression(tokens.surface.bodyFrom, tokens.surface.bodyTo);
     return {
-        customThemeColor: primary,
-        customThemeColor2: tokens.accents[1],
-        customBgColor1: tokens.surface.rowAlt,
-        customBgColor2: tokens.surface.row,
-        customTopBarColor: midpointExpression(tokens.surface.headFrom, tokens.surface.headTo),
-        'Drawer-iconColor': tokens.ink.head,
-        sheldBackgroundColor: midpointExpression(tokens.surface.bodyFrom, tokens.surface.bodyTo),
-        customScrollbarColor: tokens.line.head,
-        customlastInContext: contextMarker(tokens, primary),
-        rawCustomCss: '',
+        settings: {
+            customThemeColor: primary,
+            customThemeColor2: tokens.accents[1],
+            customBgColor1: rowAlt,
+            customBgColor2: row,
+            customTopBarColor: opacityExpression(head, 70),
+            'Drawer-iconColor': tokens.ink.head,
+            sheldBackgroundColor: opacityExpression(body, 20),
+            customScrollbarColor: tokens.line.head,
+            customlastInContext: contextMarker(tokens, primary),
+            rawCustomCss: '',
+        },
+        migrateFromV1: {
+            customBgColor1: rowAlt,
+            customBgColor2: row,
+            customTopBarColor: head,
+            sheldBackgroundColor: body,
+        },
     };
 }
 
 function midpointExpression(first, second) {
     return first === second ? first : `color-mix(in srgb, ${first} 50%, ${second})`;
+}
+
+function opacityExpression(value, percentage) {
+    return `color-mix(in srgb, ${value} ${percentage}%, transparent)`;
 }
 
 function contextMarker(tokens, color) {
@@ -232,10 +255,10 @@ function requiredColor(value, label) {
     return color;
 }
 
-function rgba(value, label = 'color') {
+function rgba(value, label = 'color', alphaOverride) {
     const color = requiredColor(value, label);
     const channels = ['r', 'g', 'b'].map(key => Math.round(Math.max(0, Math.min(255, color[key]))));
-    const alpha = Math.round(Math.max(0, Math.min(1, color.a)) * 1000) / 1000;
+    const alpha = Math.round(Math.max(0, Math.min(1, alphaOverride ?? color.a)) * 1000) / 1000;
     return `rgba(${channels.join(', ')}, ${alpha})`;
 }
 
@@ -256,6 +279,7 @@ function validateRecords(records, knownSettingIds) {
 
     for (const record of records) {
         assert.deepEqual(Object.keys(record.settings), MOONLIT_KEYS, `${record.slug}: unexpected Moonlit schema`);
+        assert.deepEqual(Object.keys(record.migrateFromV1), ['customBgColor1', 'customBgColor2', 'customTopBarColor', 'sheldBackgroundColor'], `${record.slug}: unexpected v1 migration schema`);
         assert.equal(record.settings.rawCustomCss, '', `${record.slug}: rawCustomCss must be empty`);
         if (record.mode === 'adaptive') {
             for (const [key, value] of Object.entries(record.settings)) {
@@ -269,12 +293,12 @@ function validateRecords(records, knownSettingIds) {
         assert.equal(record.uiTheme.custom_css, '', `${record.slug}: custom_css must be empty`);
         for (const key of UI_COLOR_KEYS) assertRgba(record.uiTheme[key], `${record.slug}: ${key}`);
 
-        const surfaces = ['sheldBackgroundColor', 'customBgColor2', 'customBgColor1'].map(key => requiredColor(record.settings[key], `${record.slug}: ${key}`));
+        const surfaces = [record.surfaces.body, record.surfaces.row, record.surfaces.rowAlt];
         assertContrast(record.settings.customThemeColor, surfaces, `${record.slug}: primary`);
         assertContrast(record.settings.customThemeColor2, surfaces, `${record.slug}: secondary`);
         assertContrast(record.uiTheme.main_text_color, surfaces, `${record.slug}: body ink`);
         assertContrast(record.uiTheme.italics_text_color, surfaces, `${record.slug}: muted ink`);
-        assertContrast(record.settings['Drawer-iconColor'], [requiredColor(record.settings.customTopBarColor)], `${record.slug}: drawer ink`);
+        assertContrast(record.settings['Drawer-iconColor'], [record.surfaces.head], `${record.slug}: drawer ink`);
     }
 
     const fixedNames = new Set(fixed.map(({ name }) => name));
@@ -303,7 +327,7 @@ function assertContrast(foreground, backgrounds, label) {
 
 function buildOutputs(records, presetVersion, sourceVersion) {
     const outputs = new Map();
-    const catalog = records.map(({ name, settings }) => ({ name, settings }));
+    const catalog = records.map(({ name, settings, migrateFromV1 }) => ({ name, settings, migrateFromV1 }));
     outputs.set('src/config/regex-agent-presets.generated.js',
         `// Generated by tools/generate-regex-agent-presets.mjs from Regex Agent Themes v${sourceVersion}. Do not edit.\n`
         + `export const REGEX_AGENT_PRESET_CATALOG_VERSION = ${CATALOG_VERSION};\n\n`
