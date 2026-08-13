@@ -14,7 +14,6 @@ import { t } from '../../../i18n.js';
 import { tabMappings, themeCustomSettings } from './src/config/theme-settings.js';
 import { settingsKey, getSettings as getExtensionSettings, saveSettings as saveExtensionSettings } from './src/services/settings-service.js';
 import { initializeSlashCommands } from './src/services/slash-commands.js';
-import { initChatStyleIntegration, syncChatStyleEnabledState } from './src/services/chat-styles.js';
 import { initExtension } from './src/bootstrap/init-extension.js';
 import { installLifecycleHooks, registerDomReadyHandler } from './src/bootstrap/lifecycle-hooks.js';
 import { clearActiveMessages, initControls } from './src/ui/controls.js';
@@ -191,7 +190,6 @@ export function initExtensionUI() {
 
     Promise.resolve().then(() => {
         renderExtensionSettings();
-        initChatStyleIntegration({ t });
         initAvatarInjector();
 
         // Apply active preset
@@ -532,8 +530,6 @@ export function toggleCss(shouldLoad) {
 
         const settings = getMoonlitSettings();
         applyRawCustomCss(settings?.rawCustomCss || '');
-
-        syncChatStyleEnabledState(true);
     } else {
         clearActiveMessages();
         if (shouldRefreshChatSurface) {
@@ -543,8 +539,6 @@ export function toggleCss(shouldLoad) {
         } else {
             removeDisableChatSurfaceReset();
         }
-
-        syncChatStyleEnabledState(false);
 
         // Remove CSS
         if (existingLinkStyle) existingLinkStyle.remove();

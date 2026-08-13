@@ -10,9 +10,9 @@
 > Fork issues, SillyBunny layout bugs, and compatibility reports should be directed to **purachina** on GitHub through this repository:
 > <https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/issues>
 
-This fork keeps Moonlit Echoes isolated as a third-party SillyBunny extension and carries its own chat style state, mobile layout guardrails, and SillyBunny shell compatibility CSS without requiring SillyBunny core changes.
+This fork keeps Moonlit Echoes isolated as a third-party SillyBunny extension and carries its own mobile layout guardrails and SillyBunny shell compatibility CSS without requiring SillyBunny core changes.
 
-SillyBunny note: Moonlit's Echo, Whisper, Hush, Ripple, and Tide message styles are managed by this extension rather than SillyBunny core. If you import the included UI theme files, their core `chat_display` value stays on Flat for SillyBunny compatibility; choose Moonlit styles from Appearance or the Moonlit slash commands.
+SillyBunny note: Echo, Whisper, Hush, Ripple and Tide are built into SillyBunny core now, so I've taken them out of this extension. Both halves used to fight over the same dropdown, which meant your chat style didn't survive a refresh. Pick them from Appearance or the slash commands as before. One gotcha: the bundled UI theme files still carry `chat_display: 0`, so importing one drops you back to Flat.
 
 ![Moonlit Echoes running in SillyBunny](.github/SillyBunnyPreview/hero-home.png)
 
