@@ -3512,11 +3512,11 @@ body.bubblechat {
         min-width: 0 !important;
     }
 
-    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_create {
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_create,
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_group_chats {
         align-items: center !important;
         aspect-ratio: 1 / 1 !important;
         block-size: 38px !important;
-        display: inline-flex !important;
         flex: 0 0 38px !important;
         gap: 0 !important;
         height: 38px !important;
@@ -3534,12 +3534,14 @@ body.bubblechat {
         width: 38px !important;
     }
 
-    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_create::after {
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_create::after,
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_group_chats::after {
         content: none !important;
         display: none !important;
     }
 
-    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_create::before {
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_create::before,
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_group_chats::before {
         font-size: calc(var(--mainFontSize) * 1.05) !important;
         margin: 0 !important;
     }
@@ -3569,6 +3571,41 @@ body.bubblechat {
         -webkit-transform: translateZ(0);
     }
 
+}
+
+/* Tablet only. Below 769px SillyBunny's mobile shell lays this bar out itself; between
+   769px and 1000px the block above compacts the controls but the host still uses its
+   desktop layout, so mirror the mobile shell here: a single non-wrapping row that scrolls
+   sideways instead of crushing the pagination, and #rm_button_bar buttons as true 34px
+   squares — a labelled one (Chat Archive) would otherwise wrap its text one letter per
+   line and keep its own horizontal padding. */
+@media screen and (min-width: 769px) and (max-width: 1000px) {
+    body #right-nav-panel.openDrawer .sb-character-create-bar {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        overscroll-behavior-x: contain !important;
+        scroll-padding-inline: 4px !important;
+        touch-action: pan-x !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+    }
+
+    body #right-nav-panel.openDrawer .sb-character-create-bar::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    body #right-nav-panel.openDrawer .sb-character-create-bar > * {
+        flex: 0 0 auto !important;
+    }
+
+    body #right-nav-panel.openDrawer .sb-character-create-bar #rm_button_bar .menu_button {
+        padding: 0 !important;
+    }
+
+    #rm_button_bar .menu_button > :is(span, small, b, strong) {
+        display: none !important;
+    }
 }
 
 
