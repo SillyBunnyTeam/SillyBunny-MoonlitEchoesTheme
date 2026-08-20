@@ -3398,6 +3398,7 @@ body.bubblechat {
         line-height: 1.05 !important;
     }
 
+    #result_info > #character_open_media_overrides,
     :is(#left-nav-panel, #right-nav-panel, #WorldInfo, .drawer-content, #character_popup, .popup) :is(.menu_button, .right_menu_button, .menu_button_icon):not([data-label]):is(.fa, .fa-solid, .fa-regular, .fa-brands):empty,
     :is(#left-nav-panel, #right-nav-panel, #WorldInfo, .drawer-content, #character_popup, .popup) :is(.menu_button, .right_menu_button, .menu_button_icon):not([data-label]):not(:has(> span)):not(:has(> small)):not(:has(> b)):not(:has(> strong)):has(> :is(.fa, .fa-solid, .fa-regular, .fa-brands, i, svg, img):only-child),
     :is(#left-nav-panel, #right-nav-panel, #WorldInfo, .drawer-content, #character_popup, .popup) :is(.menu_button, .right_menu_button, .menu_button_icon):not([data-label]):not(:has(> span)):not(:has(> small)):not(:has(> b)):not(:has(> strong)):has(> input[hidden] + :is(.fa, .fa-solid, .fa-regular, .fa-brands, i, svg, img):last-child) {
