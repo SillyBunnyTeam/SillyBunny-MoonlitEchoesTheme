@@ -407,7 +407,6 @@ input[type="range"] {
     }
 }
 .popup-controls {
-    margin-top: 10px;
     display: flex;
     align-self: center;
     gap: 5px;
@@ -3571,6 +3570,10 @@ body.bubblechat {
         -webkit-transform: translateZ(0);
     }
 
+}
+
+#result_info .right_menu_button {
+    padding: 4px !important;
 }
 
 /* Tablet only. Below 769px SillyBunny's mobile shell lays this bar out itself; between
