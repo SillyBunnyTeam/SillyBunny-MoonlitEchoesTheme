@@ -996,9 +996,11 @@ body:has(#sb-topbar-stack) #top-settings-holder :is(.drawer-content, .popup) * {
         }
     }
     .mes_reasoning {
-        min-width: calc(100% + var(--mes-right-spacing));
+        box-sizing: border-box;
+        max-width: calc(100% - 3px);
         margin-left: 3px;
         margin-right: unset;
+        overflow-wrap: anywhere;
         padding: 0;
         padding-left: 12px;
         border-radius: 0px;
