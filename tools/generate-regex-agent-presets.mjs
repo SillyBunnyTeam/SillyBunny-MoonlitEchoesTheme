@@ -136,6 +136,7 @@ function fixedRecord(theme, tokens, name) {
     const surfaces = effectiveSurfaces(tokens, theme.slug);
     const readableBackgrounds = [surfaces.body, surfaces.row, surfaces.rowAlt];
     const primary = rgba(readableColor(tokens.accents[0], readableBackgrounds, 4.5), `${theme.slug}: primary`);
+    const quote = rgba(tokens.accents[0], `${theme.slug}: quote`);
     const secondary = rgba(readableColor(tokens.accents[1], readableBackgrounds, 4.5), `${theme.slug}: secondary`);
     const settings = {
         customThemeColor: primary,
@@ -163,7 +164,7 @@ function fixedRecord(theme, tokens, name) {
         main_text_color: rgba(tokens.on.body, `${theme.slug}: body ink`),
         italics_text_color: rgba(tokens.on.muted, `${theme.slug}: muted ink`),
         underline_text_color: secondary,
-        quote_text_color: primary,
+        quote_text_color: quote,
         blur_tint_color: rgba(surfaces.bodyFrom, `${theme.slug}: blur tint`, 0.65),
         chat_tint_color: rgba(surfaces.bodyTo, `${theme.slug}: chat tint`, 0),
         user_mes_blur_tint_color: rgba(surfaces.rowAlt, `${theme.slug}: user tint`, 0.5),

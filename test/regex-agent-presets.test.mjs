@@ -4,8 +4,16 @@ import test from 'node:test';
 import {
     REGEX_AGENT_PRESET_CATALOG_VERSION,
     REGEX_AGENT_PRESETS,
+    REGEX_AGENT_UI_THEMES,
 } from '../src/config/regex-agent-presets.generated.js';
 import { seedRegexAgentPresets } from '../src/config/regex-agent-presets.js';
+
+test('uses authored primary accents for quote colors', () => {
+    const quoteColors = new Map(REGEX_AGENT_UI_THEMES.map(({ name, quote_text_color }) => [name, quote_text_color]));
+
+    assert.equal(quoteColors.get('Marshmallow - by platberlitz'), 'rgba(247, 143, 179, 1)');
+    assert.equal(quoteColors.get('Game Boy DMG - by platberlitz'), 'rgba(15, 56, 15, 1)');
+});
 
 test('seeds the catalog once without changing user state or collisions', () => {
     const collision = { custom: 'keep me' };

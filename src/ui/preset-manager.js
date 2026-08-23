@@ -1,5 +1,4 @@
 import { themeCustomSettings as defaultThemeCustomSettings } from '../config/theme-settings.js';
-import { installRegexAgentUiThemes } from '../services/ui-theme-installer.js';
 import {
     applyPresetBackground,
     installBundledBackgrounds,
@@ -9,6 +8,7 @@ import {
     isBuiltInPresetName,
     resolveActivePresetName,
 } from '../config/default-settings.js';
+import { installBundledUiThemes as runBundledUiThemes } from './ui-theme-installer-actions.js';
 
 const defaultTranslate = (strings, ...values) => strings.reduce((result, part, index) => {
     const value = index < values.length ? values[index] : '';
@@ -266,9 +266,11 @@ export function createPresetManagerUI(container, settingsOverride) {
 
     const installUiThemesButton = document.createElement('button');
     installUiThemesButton.id = 'moonlit-install-ui-themes';
+    installUiThemesButton.type = 'button';
     installUiThemesButton.classList.add('menu_button');
     installUiThemesButton.title = t`Install Bundled UI Themes`;
-    installUiThemesButton.innerHTML = '<i class="fa-solid fa-palette"></i>';
+    installUiThemesButton.setAttribute('aria-label', t`Install Bundled UI Themes`);
+    installUiThemesButton.innerHTML = '<i class="fa-solid fa-palette" aria-hidden="true"></i>';
     installUiThemesButton.addEventListener('click', installBundledUiThemes);
     buttonsRow.appendChild(installUiThemesButton);
 
@@ -281,6 +283,25 @@ export function createPresetManagerUI(container, settingsOverride) {
     buttonsRow.appendChild(installBackgroundsButton);
 
     presetManagerContainer.appendChild(buttonsRow);
+
+    const reinstallUiThemesButton = document.createElement('button');
+    reinstallUiThemesButton.id = 'moonlit-reinstall-ui-themes';
+    reinstallUiThemesButton.type = 'button';
+    reinstallUiThemesButton.classList.add('menu_button');
+    reinstallUiThemesButton.style.width = '100%';
+    reinstallUiThemesButton.style.marginTop = '8px';
+    reinstallUiThemesButton.title = t`Reinstall / Update Bundled UI Themes`;
+
+    const reinstallUiThemesIcon = document.createElement('i');
+    reinstallUiThemesIcon.className = 'fa-solid fa-rotate';
+    reinstallUiThemesIcon.setAttribute('aria-hidden', 'true');
+    reinstallUiThemesButton.appendChild(reinstallUiThemesIcon);
+
+    const reinstallUiThemesLabel = document.createElement('span');
+    reinstallUiThemesLabel.textContent = t`Reinstall / Update Bundled UI Themes`;
+    reinstallUiThemesButton.appendChild(reinstallUiThemesLabel);
+    reinstallUiThemesButton.addEventListener('click', event => installBundledUiThemes(event, { overwriteExisting: true }));
+    presetManagerContainer.appendChild(reinstallUiThemesButton);
 
     const backgroundSyncLabel = document.createElement('label');
     backgroundSyncLabel.style.display = 'flex';
@@ -345,14 +366,8 @@ function handlePresetFileSelected(event) {
     reader.readAsText(file);
 }
 
-export async function installBundledUiThemes() {
-    const t = managerConfig.t;
-    try {
-        const { installed, skipped } = await installRegexAgentUiThemes();
-        toastr.success(t`Installed ${installed} UI themes (${skipped} already present). Reload SillyBunny to use them.`);
-    } catch (error) {
-        toastr.error(t`Unable to install the bundled UI themes`);
-    }
+export async function installBundledUiThemes(event, options = {}) {
+    return runBundledUiThemes(event, { ...options, t: managerConfig.t });
 }
 
 export async function installBundledBackgroundsFromUi(event) {

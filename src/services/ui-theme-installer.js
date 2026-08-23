@@ -2,16 +2,17 @@ import { REGEX_AGENT_UI_THEMES } from '../config/regex-agent-presets.generated.j
 
 /**
  * Save the bundled Regex Agent UI themes into the host theme library.
- * Existing themes with the same name are left untouched.
+ * Existing themes with the same name are left untouched unless overwrite is requested.
+ * @param {{overwriteExisting?: boolean}} [options]
  * @returns {Promise<{installed: number, skipped: number}>}
  */
-export async function installRegexAgentUiThemes() {
+export async function installRegexAgentUiThemes({ overwriteExisting = false } = {}) {
     const context = SillyTavern.getContext();
     const existing = new Set(Array.from(document.getElementById('themes')?.options ?? [], option => option.value));
     let installed = 0;
 
     for (const theme of REGEX_AGENT_UI_THEMES) {
-        if (existing.has(theme.name)) continue;
+        if (!overwriteExisting && existing.has(theme.name)) continue;
 
         const response = await fetch('/api/themes/save', {
             method: 'POST',

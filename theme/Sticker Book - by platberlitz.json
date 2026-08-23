@@ -3,7 +3,7 @@
   "main_text_color": "rgba(51, 51, 51, 1)",
   "italics_text_color": "rgba(17, 19, 24, 1)",
   "underline_text_color": "rgba(17, 19, 24, 1)",
-  "quote_text_color": "rgba(17, 19, 24, 1)",
+  "quote_text_color": "rgba(255, 107, 107, 1)",
   "blur_tint_color": "rgba(255, 255, 255, 0.65)",
   "chat_tint_color": "rgba(253, 253, 253, 0)",
   "user_mes_blur_tint_color": "rgba(255, 244, 214, 0.5)",
