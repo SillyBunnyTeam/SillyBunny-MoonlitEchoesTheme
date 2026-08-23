@@ -9,7 +9,7 @@
     "customBgColor2": "transparent",
     "customTopBarColor": "color-mix(in srgb, transparent 70%, transparent)",
     "Drawer-iconColor": "var(--SmartThemeBodyColor, #f8f8f2)",
-    "sheldBackgroundColor": "color-mix(in srgb, transparent 20%, transparent)",
+    "sheldBackgroundColor": "color-mix(in srgb, transparent 65%, transparent)",
     "customScrollbarColor": "color-mix(in srgb, var(--SmartThemeBodyColor, #f8f8f2) 48%, transparent)",
     "customlastInContext": "none",
     "rawCustomCss": ""

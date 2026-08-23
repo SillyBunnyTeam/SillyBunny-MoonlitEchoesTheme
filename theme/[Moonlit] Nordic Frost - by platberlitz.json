@@ -9,7 +9,7 @@
     "customBgColor2": "rgba(55, 61, 76, 0.05)",
     "customTopBarColor": "rgba(53, 59, 73, 0.7)",
     "Drawer-iconColor": "rgba(236, 239, 244, 1)",
-    "sheldBackgroundColor": "rgba(47, 53, 68, 0.2)",
+    "sheldBackgroundColor": "rgba(47, 53, 68, 0.65)",
     "customScrollbarColor": "rgba(136, 192, 208, 0.32)",
     "customlastInContext": "3px solid rgba(136, 192, 208, 1)",
     "rawCustomCss": ""

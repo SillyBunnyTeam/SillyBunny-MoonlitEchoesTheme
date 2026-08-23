@@ -3,6 +3,11 @@ import {
     REGEX_AGENT_PRESETS,
 } from './regex-agent-presets.generated.js';
 
+function matchesGeneratedPreset(preset, expectedSettings) {
+    return preset && typeof preset === 'object'
+        && Object.entries(expectedSettings).every(([key, value]) => preset[key] === value);
+}
+
 export function seedRegexAgentPresets(settings, defaultPreset) {
     const storedVersion = Number(settings.regexAgentPresetCatalogVersion ?? 0) || 0;
     if (storedVersion >= REGEX_AGENT_PRESET_CATALOG_VERSION) return;
@@ -15,6 +20,16 @@ export function seedRegexAgentPresets(settings, defaultPreset) {
                 if (settings.presets[preset.name][key] === value) {
                     settings.presets[preset.name][key] = preset.settings[key];
                 }
+            }
+        } else if (storedVersion === 2) {
+            const previousSettings = {
+                ...defaultPreset,
+                ...preset.settings,
+                sheldBackgroundColor: preset.migrateFromV2.sheldBackgroundColor,
+            };
+            const existingPreset = settings.presets[preset.name];
+            if (matchesGeneratedPreset(existingPreset, previousSettings)) {
+                existingPreset.sheldBackgroundColor = preset.settings.sheldBackgroundColor;
             }
         }
     }

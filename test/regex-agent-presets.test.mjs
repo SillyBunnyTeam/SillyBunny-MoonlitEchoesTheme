@@ -62,3 +62,46 @@ test('migrates unchanged v1 overlays without replacing edits or deleted presets'
     assert.equal(settings.presets[REGEX_AGENT_PRESETS[2].name], collision);
     assert.equal(Object.hasOwn(settings.presets, deletedName), false);
 });
+
+test('migrates unchanged v2 shell colors without replacing edits or collisions', () => {
+    const fixed = REGEX_AGENT_PRESETS.find(({ settings }) => settings.sheldBackgroundColor.startsWith('rgba('));
+    const adaptive = REGEX_AGENT_PRESETS.find(({ settings }) => settings.sheldBackgroundColor.startsWith('color-mix('));
+    const defaults = { customDefault: 'keep me' };
+    const fixedPrevious = { ...defaults, ...fixed.settings, sheldBackgroundColor: fixed.migrateFromV2.sheldBackgroundColor };
+    const adaptivePrevious = { ...defaults, ...adaptive.settings, sheldBackgroundColor: adaptive.migrateFromV2.sheldBackgroundColor };
+    const editedName = REGEX_AGENT_PRESETS.find(({ name }) => name !== fixed.name && name !== adaptive.name).name;
+    const collisionName = REGEX_AGENT_PRESETS.find(({ name }) => name !== fixed.name && name !== adaptive.name && name !== editedName).name;
+    const edited = { ...fixedPrevious, customThemeColor: 'rgba(1, 2, 3, 0.4)' };
+    const collision = { sheldBackgroundColor: fixed.migrateFromV2.sheldBackgroundColor };
+    const settings = {
+        activePreset: fixed.name,
+        regexAgentPresetCatalogVersion: 2,
+        presets: {
+            [fixed.name]: fixedPrevious,
+            [adaptive.name]: adaptivePrevious,
+            [editedName]: edited,
+            [collisionName]: collision,
+        },
+    };
+
+    seedRegexAgentPresets(settings, defaults);
+
+    assert.equal(settings.regexAgentPresetCatalogVersion, REGEX_AGENT_PRESET_CATALOG_VERSION);
+    assert.equal(settings.activePreset, fixed.name);
+    assert.equal(settings.presets[fixed.name].sheldBackgroundColor, fixed.settings.sheldBackgroundColor);
+    assert.equal(settings.presets[adaptive.name].sheldBackgroundColor, adaptive.settings.sheldBackgroundColor);
+    assert.equal(settings.presets[editedName].sheldBackgroundColor, fixed.migrateFromV2.sheldBackgroundColor);
+    assert.equal(settings.presets[editedName].customThemeColor, edited.customThemeColor);
+    assert.deepEqual(settings.presets[collisionName], collision);
+});
+
+test('changes generated shell colors only in their final opacity', () => {
+    for (const { settings, migrateFromV2 } of REGEX_AGENT_PRESETS) {
+        const previous = migrateFromV2.sheldBackgroundColor;
+        const expected = previous.startsWith('rgba(')
+            ? previous.replace(/, 0\.2\)$/, ', 0.65)')
+            : previous.replace(/ 20%, transparent\)$/, ' 65%, transparent)');
+        assert.notEqual(expected, previous);
+        assert.equal(settings.sheldBackgroundColor, expected);
+    }
+});
