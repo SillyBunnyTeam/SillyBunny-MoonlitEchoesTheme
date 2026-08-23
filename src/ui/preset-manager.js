@@ -223,7 +223,56 @@ export function createPresetManagerUI(container, settingsOverride) {
     buttonsRow.style.alignItems = 'center';
     buttonsRow.style.gap = '8px';
     buttonsRow.style.justifyContent = 'flex-start';
+    buttonsRow.style.width = '100%';
+    buttonsRow.style.minWidth = '0';
+    buttonsRow.style.maxWidth = '100%';
+    buttonsRow.style.flexWrap = 'nowrap';
     buttonsRow.style.overflowX = 'auto';
+    buttonsRow.style.overflowY = 'hidden';
+    buttonsRow.style.overscrollBehaviorX = 'contain';
+    buttonsRow.style.touchAction = 'pan-x';
+    buttonsRow.style.webkitOverflowScrolling = 'touch';
+    buttonsRow.addEventListener('focusin', event => {
+        const target = event.target;
+        if (target instanceof HTMLElement && target.matches(':focus-visible')) {
+            target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+    });
+
+    let touchScrollState = null;
+    buttonsRow.addEventListener('touchstart', event => {
+        if (event.touches?.length !== 1) {
+            touchScrollState = null;
+            return;
+        }
+
+        const touch = event.touches[0];
+        touchScrollState = {
+            identifier: touch.identifier,
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            scrollLeft: buttonsRow.scrollLeft,
+        };
+    }, { passive: true });
+
+    buttonsRow.addEventListener('touchmove', event => {
+        if (!event.defaultPrevented || !touchScrollState || event.touches?.length !== 1) return;
+
+        const touch = event.touches[0];
+        if (touch.identifier !== touchScrollState.identifier) return;
+
+        const deltaX = touch.clientX - touchScrollState.clientX;
+        const deltaY = touch.clientY - touchScrollState.clientY;
+        if (Math.abs(deltaX) <= Math.abs(deltaY)) return;
+
+        buttonsRow.scrollLeft = touchScrollState.scrollLeft - deltaX;
+    }, { passive: true });
+
+    const clearTouchScrollState = () => {
+        touchScrollState = null;
+    };
+    buttonsRow.addEventListener('touchend', clearTouchScrollState, { passive: true });
+    buttonsRow.addEventListener('touchcancel', clearTouchScrollState, { passive: true });
 
     const importButton = document.createElement('button');
     importButton.id = 'moonlit-preset-import';
