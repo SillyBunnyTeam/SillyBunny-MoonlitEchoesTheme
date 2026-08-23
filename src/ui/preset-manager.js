@@ -223,6 +223,7 @@ export function createPresetManagerUI(container, settingsOverride) {
     buttonsRow.style.alignItems = 'center';
     buttonsRow.style.gap = '8px';
     buttonsRow.style.justifyContent = 'flex-start';
+    buttonsRow.style.overflowX = 'auto';
 
     const importButton = document.createElement('button');
     importButton.id = 'moonlit-preset-import';
