@@ -41,6 +41,8 @@ Moonlit Echoes includes palette companions for all 78 themes from [SillyBunny Re
 
 The 75 fixed light and dark presets have matching SillyBunny UI themes. Use the palette button in the Moonlit preset toolbar to install all of them at once, then reload SillyBunny; existing themes with the same name are never overwritten. The 3 adaptive presets intentionally have no UI companion because they follow the currently active SillyBunny colors.
 
+Use the image button beside it to install all 158 bundled backgrounds. Existing background files are skipped and never overwritten; reload SillyBunny after the install. Backgrounds are not changed when presets change unless you check **Use matching scene background when switching presets**. That option is off by default, and only the matching scene images are selected automatically; textures and the two general backgrounds remain manual choices.
+
 Every preset is also available as an individual `[Moonlit] ...json` file in [`theme/`](theme/), alongside the unprefixed UI theme files, for manual import or sharing.
 
 These companions translate palettes only. Regex Agent Themes remains responsible for its tracker-local typography, frames, ornaments, scanlines, and animation. Both projects are AGPL-3.0, and generated names retain the source author credit.

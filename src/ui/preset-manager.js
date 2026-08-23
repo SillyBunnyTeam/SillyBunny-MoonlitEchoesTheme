@@ -1,6 +1,10 @@
 import { themeCustomSettings as defaultThemeCustomSettings } from '../config/theme-settings.js';
 import { installRegexAgentUiThemes } from '../services/ui-theme-installer.js';
 import {
+    applyPresetBackground,
+    installBundledBackgrounds,
+} from '../services/background-installer.js';
+import {
     BUILT_IN_PRESET_NAME,
     isBuiltInPresetName,
     resolveActivePresetName,
@@ -33,7 +37,10 @@ function clonePresetSettings(settings) {
 
     try {
         const clonedSettings = structuredClone(settings);
-        return isPlainObject(clonedSettings) ? clonedSettings : null;
+        if (!isPlainObject(clonedSettings)) return null;
+
+        delete clonedSettings.syncBackgroundWithPreset;
+        return clonedSettings;
     } catch {
         return null;
     }
@@ -265,7 +272,39 @@ export function createPresetManagerUI(container, settingsOverride) {
     installUiThemesButton.addEventListener('click', installBundledUiThemes);
     buttonsRow.appendChild(installUiThemesButton);
 
+    const installBackgroundsButton = document.createElement('button');
+    installBackgroundsButton.id = 'moonlit-install-backgrounds';
+    installBackgroundsButton.classList.add('menu_button');
+    installBackgroundsButton.title = t`Install Bundled Backgrounds`;
+    installBackgroundsButton.innerHTML = '<i class="fa-solid fa-images"></i>';
+    installBackgroundsButton.addEventListener('click', installBundledBackgroundsFromUi);
+    buttonsRow.appendChild(installBackgroundsButton);
+
     presetManagerContainer.appendChild(buttonsRow);
+
+    const backgroundSyncLabel = document.createElement('label');
+    backgroundSyncLabel.style.display = 'flex';
+    backgroundSyncLabel.style.alignItems = 'center';
+    backgroundSyncLabel.style.gap = '6px';
+    backgroundSyncLabel.style.marginTop = '8px';
+
+    const backgroundSyncCheckbox = document.createElement('input');
+    backgroundSyncCheckbox.id = 'moonlit-sync-background-with-preset';
+    backgroundSyncCheckbox.type = 'checkbox';
+    backgroundSyncCheckbox.checked = settings.syncBackgroundWithPreset === true;
+    backgroundSyncCheckbox.addEventListener('change', () => {
+        const { context, settings: currentSettings } = getContextAndSettings();
+        if (!currentSettings) return;
+
+        currentSettings.syncBackgroundWithPreset = backgroundSyncCheckbox.checked;
+        context.saveSettingsDebounced();
+    });
+    backgroundSyncLabel.appendChild(backgroundSyncCheckbox);
+
+    const backgroundSyncText = document.createElement('span');
+    backgroundSyncText.textContent = t`Use matching scene background when switching presets`;
+    backgroundSyncLabel.appendChild(backgroundSyncText);
+    presetManagerContainer.appendChild(backgroundSyncLabel);
 
     const fileInput = document.createElement('input');
     fileInput.id = 'moonlit-preset-file-input';
@@ -316,6 +355,27 @@ export async function installBundledUiThemes() {
     }
 }
 
+export async function installBundledBackgroundsFromUi(event) {
+    const button = event?.currentTarget || document.getElementById('moonlit-install-backgrounds');
+    const originalHtml = button?.innerHTML;
+    if (button) {
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    }
+
+    try {
+        const { installed, skipped } = await installBundledBackgrounds();
+        toastr.success(managerConfig.t`Installed ${installed} backgrounds (${skipped} already present). Reload SillyBunny to use them.`);
+    } catch (error) {
+        toastr.error(managerConfig.t`Unable to install the bundled backgrounds`);
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML = originalHtml || '<i class="fa-solid fa-images"></i>';
+        }
+    }
+}
+
 export function importPreset() {
     const fileInput = document.getElementById('moonlit-preset-file-input');
     if (fileInput) {
@@ -337,11 +397,14 @@ export function exportActivePreset() {
         return;
     }
 
+    const exportSettings = { ...preset };
+    delete exportSettings.syncBackgroundWithPreset;
+
     const exportData = {
         moonlitEchoesPreset: true,
         presetVersion: managerConfig.themeVersion,
         presetName,
-        settings: preset,
+        settings: exportSettings,
     };
 
     const jsonString = JSON.stringify(exportData, null, 2);
@@ -506,6 +569,10 @@ export function applyPresetToSettings(presetName) {
 
     managerConfig.applyAllThemeSettings();
     managerConfig.updateSettingsUI();
+
+    if (settings.syncBackgroundWithPreset === true) {
+        void applyPresetBackground(presetName).catch(() => {});
+    }
 
     setTimeout(() => {
         managerConfig.themeCustomSettings.forEach(({ varId, type }) => {

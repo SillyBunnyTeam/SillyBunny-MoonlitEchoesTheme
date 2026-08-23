@@ -29,7 +29,8 @@ function generateDefaultSettings() {
         presets: {
             [BUILT_IN_PRESET_NAME]: {}
         },
-        activePreset: BUILT_IN_PRESET_NAME
+        activePreset: BUILT_IN_PRESET_NAME,
+        syncBackgroundWithPreset: false,
     };
 
     themeCustomSettings.forEach((setting) => {
