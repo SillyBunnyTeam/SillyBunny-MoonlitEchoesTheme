@@ -58,32 +58,24 @@ export const chatThemeSettings = [
         "displayText": t`Hide Additional Message Details`,
         "default": false,
         "category": "chat-general",
-        "description": t`Message additional details (name, ID, time, token counter, etc.) show only on hover or click`,
+        "description": t`Show message details on hover, click or keyboard focus`,
         "cssBlock": `
+            /* The header contains native actions, so keep it keyboard-focusable while faded. */
             .mes .ch_name,
             .mes .mesIDDisplay,
             .mes .mes_timer,
             .mes .tokenCounterDisplay {
-                visibility: hidden !important;
                 opacity: 0 !important;
-                transition: all var(--messageDetailsAnimationDuration) cubic-bezier(0.4, 0, 0.2, 1),
-                            visibility 0s ease var(--messageDetailsAnimationDuration) !important;
+                transition: all var(--messageDetailsAnimationDuration) cubic-bezier(0.4, 0, 0.2, 1);
                 z-index: 10 !important;
                 pointer-events: auto !important;
             }
 
-            .mes:hover .ch_name,
-            .mes:hover .mesIDDisplay,
-            .mes:hover .mes_timer,
-            .mes:hover .tokenCounterDisplay,
-            .mes.active-message .ch_name,
-            .mes.active-message .mesIDDisplay,
-            .mes.active-message .mes_timer,
-            .mes.active-message .tokenCounterDisplay {
-                visibility: visible !important;
+            .mes:is(:hover, :focus-within, .active-message) .ch_name,
+            .mes:is(:hover, :focus-within, .active-message) .mesIDDisplay,
+            .mes:is(:hover, :focus-within, .active-message) .mes_timer,
+            .mes:is(:hover, :focus-within, .active-message) .tokenCounterDisplay {
                 opacity: 1 !important;
-                transition: all var(--messageDetailsAnimationDuration) cubic-bezier(0.4, 0, 0.2, 1),
-                            visibility var(--messageDetailsAnimationDuration) ease !important;
             }
 
             .mes .mes_reasoning_details {
@@ -97,10 +89,8 @@ export const chatThemeSettings = [
                     max-height 0.3s cubic-bezier(0, 0, 0.2, 1);
                 will-change: opacity, transform;
             }
-            .mes:hover .mes_reasoning_details,
-            .mes.active-message .mes_reasoning_details {
+            .mes:is(:hover, :focus-within, .active-message) .mes_reasoning_details {
                 opacity: 1;
-                visibility: visible !important;
                 transform: translateY(0);
                 max-height: 100%;
                 pointer-events: auto;
@@ -117,14 +107,10 @@ export const chatThemeSettings = [
                     background: none;
                 }
 
-                .mes:hover .ch_name,
-                .mes:hover .mesIDDisplay,
-                .mes:hover .mes_timer,
-                .mes:hover .tokenCounterDisplay,
-                .mes.active-message .ch_name,
-                .mes.active-message .mesIDDisplay,
-                .mes.active-message .mes_timer,
-                .mes.active-message .tokenCounterDisplay {
+                .mes:is(:hover, :focus-within, .active-message) .ch_name,
+                .mes:is(:hover, :focus-within, .active-message) .mesIDDisplay,
+                .mes:is(:hover, :focus-within, .active-message) .mes_timer,
+                .mes:is(:hover, :focus-within, .active-message) .tokenCounterDisplay {
                     margin-top: unset;
                     background: unset;
                 }
@@ -141,14 +127,10 @@ export const chatThemeSettings = [
                     transform: translateY(-40px);
                 }
 
-                .mes:hover .ch_name,
-                .mes:hover .mesIDDisplay,
-                .mes:hover .mes_timer,
-                .mes:hover .tokenCounterDisplay,
-                .mes.active-message .ch_name,
-                .mes.active-message .mesIDDisplay,
-                .mes.active-message .mes_timer,
-                .mes.active-message .tokenCounterDisplay {
+                .mes:is(:hover, :focus-within, .active-message) .ch_name,
+                .mes:is(:hover, :focus-within, .active-message) .mesIDDisplay,
+                .mes:is(:hover, :focus-within, .active-message) .mes_timer,
+                .mes:is(:hover, :focus-within, .active-message) .tokenCounterDisplay {
                     transform: translateY(0);
                 }
             }

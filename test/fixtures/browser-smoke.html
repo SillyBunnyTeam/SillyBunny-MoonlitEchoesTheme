@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isolated Moonlit browser smoke fixture</title>
+<link rel="icon" href="data:,">
+<body class="flatchat">
+<div id="sidebar-buttons" style="position:fixed;left:0;top:0;z-index:99999"></div>
+<div id="extensions_settings2" hidden></div>
+<div id="extensionsMenu" hidden></div>
+<div id="movingDivs"></div>
+<div id="sheld"><div id="chat"></div><div id="form_sheld">
+  <form id="send_form" class="compact" onsubmit="return false">
+    <div id="file_form"></div>
+    <div id="nonQRFormItems"><div id="leftSendForm"></div><textarea id="send_textarea" aria-label="Message"></textarea><div id="rightSendForm"></div></div>
+    <div id="gg-action-button-container" class="gg-action-buttons-container"><div id="gg-qr-container" class="gg-qr-container"><div id="qr--bar"></div></div><div class="gg-regular-buttons-container"></div></div>
+  </form>
+</div></div>
+<script src="/lib/jquery-3.5.1.min.js"></script>
+<script type="module">
+const extension = '/scripts/extensions/third-party/SillyBunny-MoonlitEchoesTheme';
+const source = document.createElement('template');
+// Inert parsing only: no host scripts, account state, or host event handlers run.
+source.innerHTML = await (await fetch('/fixture-host-index')).text();
+const nativeStyles = [...source.content.querySelectorAll('link[rel="stylesheet"]')]
+    .map(link => link.getAttribute('href'))
+    .filter(href => /^(?:\/?style\.css|\/?css\/(?:mobile-styles|sillybunny-[\w-]+|fontawesome\.min|solid\.min)\.css)/.test(href));
+nativeStyles.push('css/sillybunny-chat-styles.css', 'scripts/extensions/quick-reply/style.css', 'scripts/extensions/guided-generations/style.css');
+await Promise.all([...new Set(nativeStyles)].map(href => new Promise((resolve, reject) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet'; link.href = href;
+    link.onload = resolve; link.onerror = () => reject(new Error(`Missing native CSS: ${href}`));
+    document.head.append(link);
+})));
+const template = source.content.querySelector('#message_template .mes');
+if (!template) throw new Error('Native #message_template .mes not found');
+for (const [index, user] of [true, false].entries()) {
+    const message = template.cloneNode(true);
+    message.querySelectorAll('script').forEach(node => node.remove());
+    for (const node of [message, ...message.querySelectorAll('*')]) {
+        for (const attr of [...node.attributes]) {
+            if (/^on/i.test(attr.name)) node.removeAttribute(attr.name);
+        }
+    }
+    message.setAttribute('mesid', index);
+    message.setAttribute('is_user', user);
+    message.setAttribute('is_system', 'false');
+    message.classList.toggle('last_mes', !user);
+    message.querySelectorAll('img').forEach(img => {
+        img.removeAttribute('srcset');
+        img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="180"><rect width="120" height="180" fill="slateblue"/></svg>';
+    });
+    message.querySelector('.name_text').textContent = user ? 'Fixture user' : 'Fixture assistant';
+    message.querySelector('.mes_text').innerHTML = '<p>First paragraph with <em>emphasis</em> and enough words to wrap on a phone.</p><p>Second paragraph.</p><ul><li>Unordered list item</li></ul><ol><li>Ordered list item</li></ol>';
+    message.classList.add('swipes_visible');
+    message.querySelector('.swipes-counter').hidden = false;
+    message.querySelector('.swipes-counter').textContent = '2/3';
+    document.querySelector('#chat').append(message);
+}
+for (const name of ['InputHistory', 'Fixture A', 'Fixture B']) {
+    const set = document.createElement('div');
+    set.className = 'qr--buttons'; set.dataset.name = name;
+    if (name === 'InputHistory') set.style.display = 'none';
+    for (let i = 0; i < 6; i++) {
+        const button = document.createElement('div');
+        button.className = 'qr--button menu_button'; button.tabIndex = 0;
+        button.textContent = `${name} reply ${i + 1}`; set.append(button);
+    }
+    document.querySelector('#qr--bar').append(set);
+}
+// Match the host's delegated Enter click contract, without loading host modules.
+$(document).on('keydown', event => {
+    if (event.key === 'Enter') $(event.target).closest('.menu_button, .interactable, .custom_interactable').trigger('click');
+});
+const powerUserSettings = { theme: 'Fixture native theme', 'customCSS-bg-blur': 0, 'customCSS-bg-opacity': 1, sheldBlurStrength: 0, sheldBackgroundColor: 'transparent' };
+window.smoke = { saves: 0, dragCalls: [], movingLoads: 0, nativeStyles };
+const context = {
+    extensionSettings: {}, powerUserSettings,
+    saveSettingsDebounced: () => smoke.saves++,
+    SlashCommandParser: { addCommandObject() {} }, SlashCommand: { fromProps: value => value },
+    eventSource: { on() {}, removeListener() {} }, event_types: { SETTINGS_UPDATED: 'settings-updated' },
+};
+window.SillyTavern = { getContext: () => context };
+window.toastr = { success() {}, info() {}, warning() {}, error: message => console.error(message) };
+const defaults = await import(`${extension}/src/config/default-settings.js`);
+const settings = structuredClone(defaults.defaultSettings);
+settings.customThemeColor = 'rgba(255, 0, 0, 0.25)';
+settings['customCSS-bg-blur'] = 0;
+settings.presets[settings.activePreset].customThemeColor = settings.customThemeColor;
+settings.presets[settings.activePreset]['customCSS-bg-blur'] = 0;
+context.extensionSettings.SillyTavernMoonlitEchoesTheme = settings;
+Object.assign(smoke, { settings, context, entry: await import(`${extension}/index.js`), factory: await import(`${extension}/src/ui/settings-factory.js`) });
+smoke.ready = true;
+</script>
+</html>

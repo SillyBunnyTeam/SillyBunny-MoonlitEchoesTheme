@@ -2,6 +2,8 @@ let popoutVisible = false;
 let popoutState = 'closed';
 let popoutSession = null;
 let transitionVersion = 0;
+let $popout = null;
+let dragInitialized = false;
 
 let settingsKey = '';
 let dragElementFn = null;
@@ -34,18 +36,18 @@ export function isPopoutVisible() {
 /**
  * Toggle the popout between open and closed states.
  */
-export function togglePopout() {
+export function togglePopout(event) {
     if (popoutVisible) {
         closePopout();
     } else {
-        openPopout();
+        openPopout(event?.currentTarget || document.activeElement);
     }
 }
 
 /**
  * Open the settings popout and move the drawer content inside it.
  */
-export function openPopout() {
+export function openPopout(launcher = document.activeElement) {
     if (popoutState === 'open' || popoutState === 'opening') return;
 
     if (popoutState === 'closing' && popoutSession) {
@@ -61,14 +63,15 @@ export function openPopout() {
     const $drawerContentElement = $drawer.find('.inline-drawer-content');
     const $movingDivs = $('#movingDivs');
     const reservedElements = document.querySelectorAll(
-        '#moonlit_echoes_popout, #moonlitEchoesPopoutHeader, #moonlit_echoes_content_container',
+        '#moonlit_echoes_popout, #moonlit_echoes_popoutheader, #moonlit_echoes_popout_title, #moonlit_echoes_content_container',
     );
     if (
         $drawer.length !== 1 ||
         $drawerHeader.length !== 1 ||
         $drawerContentElement.length !== 1 ||
         $movingDivs.length !== 1 ||
-        reservedElements.length > 0
+        document.querySelectorAll('#movingDivs').length !== 1 ||
+        Array.from(reservedElements).some(element => !$popout?.[0].contains(element))
     ) {
         return;
     }
@@ -76,38 +79,22 @@ export function openPopout() {
     const setupVersion = ++transitionVersion;
     popoutState = 'opening';
 
-    if (
-        popoutState !== 'opening' ||
-        transitionVersion !== setupVersion ||
-        document.getElementById(`${settingsKey}-drawer`) !== drawerElement ||
-        !$drawerHeader[0].isConnected ||
-        !$drawerContentElement[0].isConnected ||
-        $drawer.find('.inline-drawer-header').length !== 1 ||
-        $drawer.find('.inline-drawer-header')[0] !== $drawerHeader[0] ||
-        $drawer.find('.inline-drawer-content').length !== 1 ||
-        $drawer.find('.inline-drawer-content')[0] !== $drawerContentElement[0] ||
-        document.querySelectorAll('#movingDivs').length !== 1 ||
-        document.getElementById('movingDivs') !== $movingDivs[0] ||
-        document.querySelector(
-            '#moonlit_echoes_popout, #moonlitEchoesPopoutHeader, #moonlit_echoes_content_container',
-        )
-    ) {
-        popoutState = 'closed';
-        return;
+    if (!$popout) {
+        $popout = $(`
+            <div id="moonlit_echoes_popout" class="draggable" role="dialog" aria-modal="false" aria-labelledby="moonlit_echoes_popout_title" inert style="display: none;">
+                <div class="panelControlBar flex-container">
+                    <div class="fa-solid fa-moon" aria-hidden="true" style="margin-right: 10px;"></div>
+                    <div class="title" id="moonlit_echoes_popout_title">Moonlit Echoes Theme</div>
+                    <div class="flex1"></div>
+                    <div id="moonlit_echoes_popoutheader" class="fa-solid fa-grip drag-grabber hoverglow" aria-hidden="true"></div>
+                    <button type="button" class="fa-solid fa-circle-xmark hoverglow dragClose" aria-label="Close Moonlit Echoes settings" data-i18n="[aria-label]Close Moonlit Echoes settings"></button>
+                </div>
+                <div id="moonlit_echoes_content_container"></div>
+            </div>
+        `);
+        $popout.find('.dragClose').on('click', closePopout);
     }
 
-    const $popout = $(`
-        <div id="moonlit_echoes_popout" class="draggable" style="display: none;">
-            <div class="panelControlBar flex-container" id="moonlitEchoesPopoutHeader">
-                <div class="fa-solid fa-moon" style="margin-right: 10px;"></div>
-                <div class="title">Moonlit Echoes Theme</div>
-                <div class="flex1"></div>
-                <div class="fa-solid fa-grip drag-grabber hoverglow"></div>
-                <div class="fa-solid fa-circle-xmark hoverglow dragClose"></div>
-            </div>
-            <div id="moonlit_echoes_content_container"></div>
-        </div>
-    `);
     const contentParent = $drawerContentElement[0].parentNode;
     const contentAnchor = document.createComment('moonlit-echoes-drawer-content');
     const contentStyle = $drawerContentElement.attr('style');
@@ -126,8 +113,23 @@ export function openPopout() {
         contentAnchor,
         contentStyle,
         contentHadOpenClass,
+        launcher,
     };
     popoutSession = session;
+
+    if (!dragInitialized && typeof dragElementFn === 'function') {
+        // The host retains an anonymous document mouseup listener for each initialisation.
+        dragInitialized = true;
+        try {
+            dragElementFn($popout);
+        } catch (error) {
+            // Silent error handling to avoid breaking UI.
+        }
+    }
+    if (!isCurrentSetup(session, setupVersion)) {
+        cleanUpInterruptedSetup(session, setupVersion);
+        return;
+    }
 
     if (typeof loadMovingUIStateFn === 'function') {
         try {
@@ -140,24 +142,6 @@ export function openPopout() {
         cleanUpInterruptedSetup(session, setupVersion);
         return;
     }
-
-    if (typeof dragElementFn === 'function') {
-        try {
-            dragElementFn($popout);
-        } catch (error) {
-            // Silent error handling to avoid breaking UI.
-        }
-    }
-    if (!isCurrentSetup(session, setupVersion)) {
-        cleanUpInterruptedSetup(session, setupVersion);
-        return;
-    }
-
-    $popout.find('.dragClose').on('click', () => {
-        if (popoutSession === session) {
-            closePopout();
-        }
-    });
 
     startOpening(session);
 }
@@ -180,7 +164,8 @@ function cleanUpInterruptedSetup(session, version) {
     }
 
     restoreDrawerContent(session);
-    session.$popout.remove();
+    session.$popout.hide();
+    session.$popout[0].inert = true;
     popoutSession = null;
     popoutState = 'closed';
 }
@@ -196,6 +181,7 @@ export function closePopout() {
     popoutState = 'closing';
 
     $(document).off('keydown.moonlit_popout');
+    session.$popout[0].inert = true;
     setVisibility(false);
     if (
         popoutSession !== session ||
@@ -215,20 +201,30 @@ export function closePopout() {
         }
 
         restoreDrawerContent(session);
-        session.$popout.remove();
+        session.$popout.hide();
         popoutSession = null;
         popoutState = 'closed';
+        if (session.launcher?.isConnected && !document.querySelector('dialog[open]')) {
+            session.launcher.focus({ preventScroll: true });
+        }
     });
 }
 
 function startOpening(session) {
     const version = ++transitionVersion;
     popoutState = 'opening';
+    session.$popout[0].inert = false;
 
     $(document)
         .off('keydown.moonlit_popout')
         .on('keydown.moonlit_popout', (event) => {
-            if (event.key === 'Escape') {
+            if (
+                event.key === 'Escape' &&
+                !event.defaultPrevented &&
+                !event.isDefaultPrevented?.() &&
+                !document.querySelector('dialog[open]')
+            ) {
+                event.preventDefault();
                 closePopout();
             }
         });
@@ -241,7 +237,15 @@ function startOpening(session) {
         return;
     }
 
-    session.$popout.stop(true, false).fadeIn(250).promise('fx').always(() => {
+    const $opening = session.$popout.stop(true, false).fadeIn(250);
+    if (
+        popoutSession === session &&
+        transitionVersion === version &&
+        !document.querySelector('dialog[open]')
+    ) {
+        session.$popout.find('.dragClose')[0].focus({ preventScroll: true });
+    }
+    $opening.promise('fx').always(() => {
         if (
             popoutSession === session &&
             popoutState === 'opening' &&

@@ -8,7 +8,6 @@ import {
     syncMoonlitPresetsWithThemeList,
     upsertPresetSnapshot,
 } from '../ui/preset-manager.js';
-import { initFormSheldHeightMonitor } from '../core/observers.js';
 
 const domReadyHandlers = new Set();
 let lifecycleInstalled = false;
@@ -143,8 +142,8 @@ const moonlitEchoesApi = {
             };
         },
 
-        import: function(jsonData) {
-            return Boolean(importPresetSnapshot(jsonData, { activate: false }));
+        import: function(jsonData, { overwrite = false } = {}) {
+            return Boolean(importPresetSnapshot(jsonData, { activate: false, overwrite }));
         }
     }
 };
@@ -180,5 +179,4 @@ export function installLifecycleHooks(dependencies) {
     moonlitEchoesApi.applySetting = applyThemeSetting;
     window.initializeThemeColorOnDemand = initializeThemeColorOnDemand;
     window.MoonlitEchoesTheme = moonlitEchoesApi;
-    window.formSheldHeightController = initFormSheldHeightMonitor();
 }

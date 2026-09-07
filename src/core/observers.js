@@ -3,103 +3,8 @@ import { getSettings as getExtensionSettings } from '../services/settings-servic
 let activeAvatarUpdater = null;
 let activeFormSheldHeightController = null;
 
-function stripOrigin(url) {
-    if (!url) return '';
-    if (url.startsWith(window.location.origin)) {
-        return url.replace(window.location.origin, '');
-    }
-    return url;
-}
-
-function parseAvatarSource(rawSrc) {
-    if (!rawSrc) return null;
-
-    const normalized = stripOrigin(rawSrc);
-    const trimmed = normalized.startsWith('/') ? normalized.slice(1) : normalized;
-
-    try {
-        const parsed = new URL(normalized, window.location.origin);
-        if (parsed.pathname.endsWith('thumbnail')) {
-            const type = parsed.searchParams.get('type');
-            const file = parsed.searchParams.get('file');
-            if (type && file) {
-                return { type, file: decodeURIComponent(file) };
-            }
-        }
-    } catch (err) {
-        // Ignore URL parse errors and fall back to path inspection
-    }
-
-    if (trimmed.startsWith('characters/')) {
-        return { type: 'avatar', file: trimmed.replace(/^characters\//, '') };
-    }
-
-    if (trimmed.startsWith('User Avatars/')) {
-        return { type: 'persona', file: trimmed.replace(/^User Avatars\//, '') };
-    }
-
-    return { type: null, file: trimmed };
-}
-
-function getAvatarSources(rawSrc) {
-    const info = parseAvatarSource(rawSrc);
-    if (!info) {
-        return { thumb: null, original: null };
-    }
-
-    const { type, file } = info;
-    const ensureAbsolute = (path) => {
-        if (!path) return '';
-        return path.startsWith('/') ? path : `/${path}`;
-    };
-
-    const thumb =
-        type === 'avatar' || type === 'persona'
-            ? `/thumbnail?type=${type}&file=${encodeURIComponent(file)}`
-            : ensureAbsolute(info.file);
-
-    const original =
-        type === 'avatar'
-            ? ensureAbsolute(`characters/${file}`)
-            : type === 'persona'
-                ? ensureAbsolute(`User Avatars/${file}`)
-                : ensureAbsolute(info.file);
-
-    return {
-        thumb: stripOrigin(thumb),
-        original: stripOrigin(original),
-    };
-}
-
-function applyAvatarSources(mes, avatarImg, preferOriginal) {
-    const srcCandidate = avatarImg.getAttribute('src') || avatarImg.getAttribute('data-src');
-    if (!srcCandidate) return;
-
-    const { thumb, original } = getAvatarSources(srcCandidate);
-    if (!thumb && !original) return;
-
-    const thumbUrl = thumb || original;
-    const originalUrl = original || thumbUrl;
-    const targetUrl = preferOriginal ? originalUrl : thumbUrl;
-
-    mes.dataset.avatarThumb = thumbUrl;
-    mes.dataset.avatarOriginal = originalUrl;
-    mes.dataset.avatar = targetUrl;
-
-    mes.style.setProperty('--mes-avatar-thumb-url', `url('${thumbUrl}')`);
-    mes.style.setProperty('--mes-avatar-original-url', `url('${originalUrl}')`);
-    mes.style.setProperty('--mes-avatar-url', `url('${targetUrl}')`);
-
-    const currentSrc = stripOrigin(avatarImg.getAttribute('src') || '');
-    const desiredSrc = stripOrigin(targetUrl);
-    if (desiredSrc && currentSrc !== desiredSrc) {
-        avatarImg.setAttribute('src', targetUrl);
-    }
-}
-
 /**
- * Initialize avatar injector observer.
- * Injects avatar URLs into message elements so they can be used in CSS.
+ * Apply the original-image preference using the host's encoded avatar sources.
  * @returns {function} Function to manually trigger avatar updates.
  */
 export function initAvatarInjector() {
@@ -108,20 +13,41 @@ export function initAvatarInjector() {
     let observer = null;
     let debounceTimer = null;
     let isDestroyed = false;
+    const overrides = new Map();
 
     function updateAvatars() {
         if (isDestroyed) return;
 
         const context = SillyTavern.getContext();
         const settings = getExtensionSettings(context) || {};
-        const preferOriginal = settings.useOriginalAvatarImages === true;
+        const preferOriginal = settings.enabled === true && settings.useOriginalAvatarImages === true;
+        let changed = false;
 
-        document.querySelectorAll('.mes').forEach((mes) => {
+        for (const [image, override] of overrides) {
+            if (!image.isConnected || image.getAttribute('src') !== override.applied) {
+                overrides.delete(image);
+            } else if (!preferOriginal) {
+                image.setAttribute('src', override.source);
+                overrides.delete(image);
+                changed = true;
+            }
+        }
+
+        if (preferOriginal) document.querySelectorAll('.mes').forEach((mes) => {
             const avatarImg = mes.querySelector('.avatar img');
             if (!avatarImg) return;
 
-            applyAvatarSources(mes, avatarImg, preferOriginal);
+            const currentSrc = avatarImg.getAttribute('src');
+            const originalSrc = avatarImg.getAttribute('data-original-src');
+            if (!currentSrc || !originalSrc || originalSrc === currentSrc) return;
+
+            const override = overrides.get(avatarImg);
+            overrides.set(avatarImg, { source: override?.source || currentSrc, applied: originalSrc });
+            avatarImg.setAttribute('src', originalSrc);
+            changed = true;
         });
+
+        if (changed) window.updateSillyBunnyChatAvatars?.();
     }
 
     updateAvatars();
@@ -134,7 +60,12 @@ export function initAvatarInjector() {
     const chatContainer = document.getElementById('chat');
     if (chatContainer) {
         observer = new MutationObserver(observerCallback);
-        observer.observe(chatContainer, { childList: true, subtree: true });
+        observer.observe(chatContainer, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['src', 'data-original-src', 'data-thumbnail-src'],
+        });
     }
 
     updateAvatars.destroy = () => {
@@ -143,6 +74,14 @@ export function initAvatarInjector() {
         isDestroyed = true;
         clearTimeout(debounceTimer);
         observer?.disconnect();
+        for (const [image, override] of overrides) {
+            // Do not undo a newer avatar choice made by the host.
+            if (image.isConnected && image.getAttribute('src') === override.applied) {
+                image.setAttribute('src', override.source);
+            }
+        }
+        if (overrides.size) window.updateSillyBunnyChatAvatars?.();
+        overrides.clear();
 
         if (activeAvatarUpdater === updateAvatars) {
             activeAvatarUpdater = null;
@@ -197,7 +136,7 @@ export function initFormSheldHeightMonitor() {
     }
 
     function updateFormSheldHeight() {
-        if (isDestroyed) return;
+        if (isDestroyed || !isStarted) return;
 
         const formSheld = document.getElementById('form_sheld');
         if (formSheld) {
@@ -241,14 +180,8 @@ export function initFormSheldHeightMonitor() {
     });
 
     const resizeObserver = new ResizeObserver((entries) => {
-        for (const entry of entries) {
-            if (entry.target.id === 'form_sheld') {
-                const { height } = entry.contentRect;
-                if (height > 0) {
-                    document.documentElement.style.setProperty('--formSheldHeight', `${height}px`);
-                    isInitialized = true;
-                }
-            }
+        if (entries.some(entry => entry.target.id === 'form_sheld')) {
+            updateFormSheldHeight();
         }
     });
 

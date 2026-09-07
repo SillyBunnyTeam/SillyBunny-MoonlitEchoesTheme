@@ -31,16 +31,15 @@ import {
     configureSettingsFactory,
     createSettingItem,
     updateSettingsUI,
-    updateColorPickerUI,
-    updateSelectUI,
     updateAllCheckboxStyles,
     addModernCompactStyles,
 } from './src/ui/settings-factory.js';
 import {
     applyAllThemeSettings as applyAllThemeSettingsCore,
+    getThemeCssVariable,
     shouldApplyThemeSetting,
 } from './src/core/theme-applier.js';
-import { initAvatarInjector } from './src/core/observers.js';
+import { initAvatarInjector, initFormSheldHeightMonitor } from './src/core/observers.js';
 import { addThemeButtonsHint } from './src/services/hints.js';
 import { integrateWithThemeSelector } from './src/services/theme-selector.js';
 
@@ -119,7 +118,7 @@ function clearInlineThemeSettings({ restoreNative = true } = {}) {
     const rootStyle = document.documentElement.style;
     themeCustomSettings.forEach(({ varId }) => {
         if (varId) {
-            rootStyle.removeProperty(`--${varId}`);
+            rootStyle.removeProperty(getThemeCssVariable(varId));
         }
     });
 
@@ -190,7 +189,7 @@ export function initExtensionUI() {
 
     Promise.resolve().then(() => {
         renderExtensionSettings();
-        initAvatarInjector();
+        if (getMoonlitSettings()?.enabled) initAvatarInjector();
 
         // Apply active preset
         applyActivePreset();
@@ -444,7 +443,8 @@ function addSlashCommandsTip(container) {
 
 function updateThemeSelector(presetName) {
     const themeSelector = document.getElementById('themes');
-    if (!themeSelector) return;
+    if (!getMoonlitSettings()?.enabled || !themeSelector) return;
+    if (themeSelector.value === presetName && power_user.theme === presetName) return;
 
     // Only update theme selector when option already exists, don't add any new options
     let optionExists = false;
@@ -460,7 +460,7 @@ function updateThemeSelector(presetName) {
 
     // Only trigger change event if option exists
     if (optionExists) {
-        themeSelector.dispatchEvent(new Event('change'));
+        themeSelector.dispatchEvent(new Event('change', { bubbles: true }));
     }
 }
 
@@ -530,7 +530,14 @@ export function toggleCss(shouldLoad) {
 
         const settings = getMoonlitSettings();
         applyRawCustomCss(settings?.rawCustomCss || '');
+        initAvatarInjector();
+        if (!window.formSheldHeightController) {
+            window.formSheldHeightController = initFormSheldHeightMonitor();
+        }
     } else {
+        window.updateAvatars?.destroy?.();
+        window.formSheldHeightController?.destroy();
+        document.documentElement.style.removeProperty('--formSheldHeight');
         clearActiveMessages();
         if (shouldRefreshChatSurface) {
             // Neutralize Moonlit's mask before detaching its stylesheet so the
@@ -819,8 +826,9 @@ container.appendChild(versionContainer);
 */
 export function applyThemeSetting(varId, value) {
     const settings = getMoonlitSettings();
+    const cssVariable = getThemeCssVariable(varId);
     if (settings?.enabled === false) {
-        document.documentElement.style.removeProperty(`--${varId}`);
+        document.documentElement.style.removeProperty(cssVariable);
         if (NATIVE_THEME_EFFECT_VAR_IDS.has(varId)) {
             restoreNativeThemeEffects();
         }
@@ -832,9 +840,9 @@ export function applyThemeSetting(varId, value) {
     }
 
     if (shouldApplyThemeSetting(varId, value)) {
-        document.documentElement.style.setProperty(`--${varId}`, value, 'important');
+        document.documentElement.style.setProperty(cssVariable, value, 'important');
     } else {
-        document.documentElement.style.removeProperty(`--${varId}`);
+        document.documentElement.style.removeProperty(cssVariable);
         applyAllThemeSettings();
     }
 
@@ -845,6 +853,10 @@ export function applyThemeSetting(varId, value) {
 }
 // Inject raw CSS (unfiltered) into the page via a dedicated <style> tag
 function applyRawCustomCss(cssText) {
+    if (getMoonlitSettings()?.enabled !== true || !cssText) {
+        removeRawCustomCss();
+        return;
+    }
     let rawStyle = document.getElementById(RAW_CUSTOM_CSS_ID);
     if (!rawStyle) {
         rawStyle = document.createElement('style');
@@ -858,12 +870,7 @@ function applyRawCustomCss(cssText) {
 document.addEventListener('themeSettingChanged', (ev) => {
     const { varId, value } = ev.detail || {};
     if (varId === 'rawCustomCss') {
-        const settings = getMoonlitSettings();
-        if (settings?.enabled === false) {
-            removeRawCustomCss();
-        } else {
-            applyRawCustomCss(value);
-        }
+        applyRawCustomCss(value);
     }
 });
 
@@ -915,8 +922,6 @@ configurePresetManager({
     applyThemeSetting,
     applyAllThemeSettings,
     updateSettingsUI,
-    updateColorPickerUI,
-    updateSelectUI,
     updateThemeSelector,
 });
 

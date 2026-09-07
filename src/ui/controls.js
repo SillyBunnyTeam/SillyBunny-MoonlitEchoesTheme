@@ -66,14 +66,12 @@ function addExtensionMenuButton() {
 function initializeSidebarButton() {
     if ($('#moonlit_sidebar_button').length === 0) {
         const $button = $(`
-            <div id="moonlit_sidebar_button" class="fa-solid fa-moon" title="Moonlit Echoes"></div>
+            <button type="button" id="moonlit_sidebar_button" class="fa-solid fa-moon" title="Moonlit Echoes" aria-label="Moonlit Echoes"></button>
         `);
 
         $('#sidebar-buttons').append($button);
 
-        $button.on('click', () => {
-            togglePopout();
-        });
+        $button.on('click', togglePopout);
     }
 
     if (!sidebarStylesInjected) {
@@ -101,6 +99,8 @@ function initializeSidebarButton() {
                 width: 40px;
                 height: 40px;
                 cursor: pointer;
+                border: 0;
+                background: transparent;
                 border-radius: 8px;
                 margin-bottom: 5px;
                 color: var(--SmartThemeBodyColor);
@@ -215,7 +215,7 @@ function addSettingsPopoutButton() {
     });
 
     $button.on('click', (event) => {
-        togglePopout();
+        togglePopout(event);
         event.stopPropagation();
     });
 

@@ -63,10 +63,6 @@
     background-color: var(--SmartThemeBlurTintColor) !important;
     backdrop-filter: blur(calc(var(--SmartThemeBlurStrength))) !important;
     -webkit-backdrop-filter: blur(calc(var(--SmartThemeBlurStrength))) !important;
-
-    @media screen and (max-width: 1000px) {
-        margin-left: -50px;
-    }
 }
 .ctx-sub-menu {
     opacity: 1 !important;
@@ -892,7 +888,6 @@ body:has(#chatsplus-tab-row) {
 
 #send_form #gg-action-button-container .stih--buttons {
     align-items: center;
-    display: flex;
     flex: 0 0 auto;
     grid-area: history;
     justify-content: flex-start;
@@ -903,7 +898,6 @@ body:has(#chatsplus-tab-row) {
 }
 
 #send_form #gg-action-button-container .gg-qr-container {
-    display: flex;
     grid-area: quick-replies;
     grid-column: 1 / -1;
     justify-content: center;
@@ -914,13 +908,11 @@ body:has(#chatsplus-tab-row) {
 
 #send_form #gg-action-button-container .stih--arrows,
 #send_form .stih--standalone .stih--arrows {
-    display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
 }
 
 #send_form #gg-action-button-container .gg-regular-buttons-container {
-    display: flex;
     flex: 0 0 auto;
     grid-area: actions;
     justify-content: flex-end;
@@ -934,7 +926,6 @@ body:has(#chatsplus-tab-row) {
 
 #send_form .stih--standalone {
     align-items: center;
-    display: flex;
     justify-content: flex-start;
     order: 1;
     padding: 0 8px 6px;
@@ -955,7 +946,7 @@ body:has(#chatsplus-tab-row) {
     padding: 5px !important;
     margin-bottom: 2px !important;
     border-radius: 10px !important;
-    transition: all 0.5s ease !important;
+    transition: all 0.5s ease;
 
     &:hover {
         opacity: 1;
@@ -969,7 +960,6 @@ body:has(#chatsplus-tab-row) {
 
 #nonQRFormItems {
     .stih--buttons .stih--arrows {
-        display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
     }

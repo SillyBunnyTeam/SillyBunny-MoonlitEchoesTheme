@@ -9,6 +9,7 @@ import {
     resolveActivePresetName,
 } from '../config/default-settings.js';
 import { installBundledUiThemes as runBundledUiThemes } from './ui-theme-installer-actions.js';
+import { parseColorValue } from '../utils/color.js';
 
 const defaultTranslate = (strings, ...values) => strings.reduce((result, part, index) => {
     const value = index < values.length ? values[index] : '';
@@ -32,12 +33,70 @@ function isPlainObject(value) {
     }
 }
 
+function cloneJsonData(value, ancestors = new Set()) {
+    if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+
+    const isArray = Array.isArray(value);
+    if ((!isArray && !isPlainObject(value)) || ancestors.has(value)) {
+        throw new TypeError('Preset data must be JSON-compatible');
+    }
+
+    // Do not invoke getters or toJSON while validating imported data.
+    const descriptors = Object.getOwnPropertyDescriptors(value);
+    const keys = Reflect.ownKeys(descriptors);
+    if (isArray && keys.length !== value.length + 1) {
+        throw new TypeError('Preset arrays must not contain holes or extra properties');
+    }
+
+    ancestors.add(value);
+    const cloned = isArray ? [] : {};
+    for (const key of keys) {
+        if (isArray && key === 'length') continue;
+        const descriptor = descriptors[key];
+        if (
+            typeof key !== 'string' || RESERVED_PRESET_NAMES.has(key) ||
+            !descriptor.enumerable || !Object.hasOwn(descriptor, 'value') ||
+            (isArray && (!/^(0|[1-9]\d*)$/.test(key) || Number(key) >= value.length))
+        ) {
+            throw new TypeError('Preset data contains an unsafe or non-JSON property');
+        }
+        cloned[key] = cloneJsonData(descriptor.value, ancestors);
+    }
+    ancestors.delete(value);
+    return cloned;
+}
+
 function clonePresetSettings(settings) {
     if (!isPlainObject(settings)) return null;
-
     try {
-        const clonedSettings = structuredClone(settings);
-        if (!isPlainObject(clonedSettings)) return null;
+        const clonedSettings = cloneJsonData(settings);
+        for (const { varId, type, min, max, options } of managerConfig.themeCustomSettings) {
+            if (!Object.hasOwn(clonedSettings, varId)) continue;
+            const value = clonedSettings[varId];
+            switch (type) {
+                case 'checkbox':
+                    if (typeof value !== 'boolean') return null;
+                    break;
+                case 'slider': {
+                    if (typeof value !== 'number' && (typeof value !== 'string' || !value.trim())) return null;
+                    const numericValue = Number(value);
+                    if (!Number.isFinite(numericValue) || numericValue < min || numericValue > max) return null;
+                    break;
+                }
+                case 'select':
+                    if (!['string', 'number', 'boolean'].includes(typeof value) || !options?.some(option =>
+                        value === option.value || (typeof value === 'string' && value === String(option.value)))) return null;
+                    break;
+                case 'color':
+                    if (typeof value !== 'string' || !(parseColorValue(value) || globalThis.CSS?.supports('color', value))) return null;
+                    break;
+                case 'text':
+                case 'textarea':
+                    if (typeof value !== 'string') return null;
+                    break;
+            }
+        }
 
         delete clonedSettings.syncBackgroundWithPreset;
         return clonedSettings;
@@ -59,7 +118,7 @@ export function normalizePresetName(name, { stripMoonlitPrefix = false } = {}) {
     if (typeof name !== 'string') return null;
 
     let normalizedName = name.trim();
-    if (stripMoonlitPrefix && normalizedName.startsWith('[Moonlit] ')) {
+    if (stripMoonlitPrefix && (normalizedName === '[Moonlit]' || normalizedName.startsWith('[Moonlit] '))) {
         normalizedName = normalizedName.slice('[Moonlit] '.length).trim();
     }
 
@@ -68,24 +127,30 @@ export function normalizePresetName(name, { stripMoonlitPrefix = false } = {}) {
 }
 
 export function resolveStoredPresetName(presets, name) {
-    if (typeof name === 'string' && Object.hasOwn(presets || {}, name)) {
+    const normalizedName = normalizePresetName(name);
+    if (!normalizedName) return null;
+    if (Object.hasOwn(presets || {}, name)) {
         return name;
     }
 
-    const normalizedName = normalizePresetName(name);
-    return normalizedName && Object.hasOwn(presets || {}, normalizedName) ? normalizedName : null;
+    return Object.hasOwn(presets || {}, normalizedName) ? normalizedName : null;
 }
 
 export function validatePresetImportData(jsonData) {
-    if (!isPlainObject(jsonData) || !jsonData.moonlitEchoesPreset || typeof jsonData.presetName !== 'string') return null;
+    try {
+        if (!isPlainObject(jsonData)) return null;
+        const data = cloneJsonData(jsonData);
+        if (data.moonlitEchoesPreset !== true || !normalizePresetName(data.presetName, { stripMoonlitPrefix: true })) return null;
 
-    const trimmedName = jsonData.presetName.trim();
-    const presetName = trimmedName.startsWith('[Moonlit] ')
-        ? normalizePresetName(trimmedName, { stripMoonlitPrefix: true })
-        : trimmedName && jsonData.presetName;
-    if (!presetName || !isPlainObject(jsonData.settings)) return null;
-
-    return { presetName, settings: jsonData.settings };
+        const trimmedName = data.presetName.trim();
+        const presetName = trimmedName.startsWith('[Moonlit] ')
+            ? normalizePresetName(trimmedName, { stripMoonlitPrefix: true })
+            : data.presetName;
+        const settings = clonePresetSettings(data.settings);
+        return presetName && settings ? { presetName, settings } : null;
+    } catch {
+        return null;
+    }
 }
 
 let managerConfig = {
@@ -96,23 +161,21 @@ let managerConfig = {
     applyThemeSetting: noop,
     applyAllThemeSettings: noop,
     updateSettingsUI: noop,
-    updateColorPickerUI: noop,
-    updateSelectUI: noop,
     updateThemeSelector: noop,
+    onPresetActivated: noop,
 };
 
 export function configurePresetManager(options = {}) {
     managerConfig = {
         ...managerConfig,
         ...options,
-        t: options.t || defaultTranslate,
+        t: options.t || managerConfig.t,
         themeCustomSettings: options.themeCustomSettings || managerConfig.themeCustomSettings,
         applyThemeSetting: options.applyThemeSetting || managerConfig.applyThemeSetting,
         applyAllThemeSettings: options.applyAllThemeSettings || managerConfig.applyAllThemeSettings,
         updateSettingsUI: options.updateSettingsUI || managerConfig.updateSettingsUI,
-        updateColorPickerUI: options.updateColorPickerUI || managerConfig.updateColorPickerUI,
-        updateSelectUI: options.updateSelectUI || managerConfig.updateSelectUI,
         updateThemeSelector: options.updateThemeSelector || managerConfig.updateThemeSelector,
+        onPresetActivated: options.onPresetActivated || managerConfig.onPresetActivated,
     };
 }
 
@@ -120,6 +183,20 @@ function getContextAndSettings() {
     const context = SillyTavern.getContext();
     const settings = managerConfig.settingsKey ? context.extensionSettings[managerConfig.settingsKey] : undefined;
     return { context, settings };
+}
+
+function createImportStateCheck() {
+    // Reads and confirmation dialogs must not replace intervening edits.
+    const { context, settings } = getContextAndSettings();
+    const settingsBefore = JSON.stringify(settings);
+    const nativeThemeBefore = context.powerUserSettings?.theme;
+    const selectionBefore = document.getElementById('themes')?.value;
+    return () => {
+        const current = getContextAndSettings();
+        return current.settings === settings && JSON.stringify(current.settings) === settingsBefore &&
+            current.context.powerUserSettings?.theme === nativeThemeBefore &&
+            document.getElementById('themes')?.value === selectionBefore;
+    };
 }
 
 export function upsertPresetSnapshot(name, presetSettings, { activate = false } = {}) {
@@ -133,22 +210,26 @@ export function upsertPresetSnapshot(name, presetSettings, { activate = false } 
     settings.presets[presetName] = clonedSettings;
     if (activate) {
         settings.activePreset = presetName;
-        managerConfig.updateThemeSelector(presetName);
+        syncMoonlitPresetsWithThemeList();
     }
 
     if (activate || replacesActivePreset) {
         applyPresetToSettings(presetName);
     }
+    if (activate) managerConfig.onPresetActivated();
 
     updatePresetSelector();
-    syncMoonlitPresetsWithThemeList();
     context.saveSettingsDebounced();
     return presetName;
 }
 
-export function importPresetSnapshot(jsonData, { activate = true } = {}) {
+// Imports require explicit overwrite permission; upsert remains the intentional update path.
+export function importPresetSnapshot(jsonData, { activate = true, overwrite = false } = {}) {
     const importData = validatePresetImportData(jsonData);
     if (!importData) return null;
+
+    const { settings } = getContextAndSettings();
+    if (overwrite !== true && resolveStoredPresetName(settings?.presets, importData.presetName)) return null;
 
     return upsertPresetSnapshot(importData.presetName, importData.settings, { activate });
 }
@@ -170,11 +251,12 @@ export function deletePresetSnapshot(name) {
     delete settings.presets[presetName];
     settings.activePreset = resolveActivePresetName(settings.presets, previousActivePreset);
     if (settings.activePreset !== previousActivePreset) {
+        syncMoonlitPresetsWithThemeList();
         applyPresetToSettings(settings.activePreset);
+        managerConfig.onPresetActivated();
     }
 
     updatePresetSelector();
-    syncMoonlitPresetsWithThemeList();
     context.saveSettingsDebounced();
     return true;
 }
@@ -200,6 +282,7 @@ export function createPresetManagerUI(container, settingsOverride) {
 
     const presetSelector = document.createElement('select');
     presetSelector.id = 'moonlit-preset-selector';
+    presetSelector.setAttribute('aria-label', t`Moonlit Echoes Theme Presets`);
     presetSelector.classList.add('moonlit-preset-selector');
     presetSelector.style.width = '100%';
 
@@ -326,9 +409,11 @@ export function createPresetManagerUI(container, settingsOverride) {
 
     const installBackgroundsButton = document.createElement('button');
     installBackgroundsButton.id = 'moonlit-install-backgrounds';
+    installBackgroundsButton.type = 'button';
     installBackgroundsButton.classList.add('menu_button');
     installBackgroundsButton.title = t`Install Bundled Backgrounds`;
-    installBackgroundsButton.innerHTML = '<i class="fa-solid fa-images"></i>';
+    installBackgroundsButton.setAttribute('aria-label', t`Install Bundled Backgrounds`);
+    installBackgroundsButton.innerHTML = '<i class="fa-solid fa-images" aria-hidden="true"></i>';
     installBackgroundsButton.addEventListener('click', installBundledBackgroundsFromUi);
     buttonsRow.appendChild(installBackgroundsButton);
 
@@ -392,28 +477,27 @@ export function initPresetManager() {
     // Placeholder for future shared initialization logic
 }
 
-function handlePresetFileSelected(event) {
-    const file = event.target.files[0];
+async function handlePresetFileSelected(event) {
+    const input = event.target;
+    const file = input.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const jsonData = JSON.parse(e.target.result);
-            const presetName = importPresetSnapshot(jsonData);
-            if (!presetName) {
-                throw new Error(managerConfig.t`Invalid Moonlit Echoes theme preset file format`);
-            }
-
-            toastr.success(managerConfig.t`Preset "${escapeHtml(presetName)}" imported successfully`);
-        } catch (error) {
-            toastr.error(managerConfig.t`Unable to import preset: invalid file or preset data`);
+    const wasDisabled = input.disabled;
+    input.disabled = true;
+    try {
+        const importStateIsCurrent = createImportStateCheck();
+        const jsonData = JSON.parse(await file.text());
+        if (!importStateIsCurrent()) {
+            toastr.error(managerConfig.t`Settings changed while reading the file. Import it again.`);
+            return;
         }
-
-        event.target.value = '';
-    };
-
-    reader.readAsText(file);
+        await handleMoonlitPresetImport(jsonData);
+    } catch {
+        toastr.error(managerConfig.t`Unable to import preset: unreadable file or invalid preset data`);
+    } finally {
+        input.value = '';
+        input.disabled = wasDisabled;
+    }
 }
 
 export async function installBundledUiThemes(event, options = {}) {
@@ -602,8 +686,9 @@ export function loadPreset(presetName) {
     }
 
     settings.activePreset = storedPresetName;
-    managerConfig.updateThemeSelector(storedPresetName);
+    syncMoonlitPresetsWithThemeList();
     applyPresetToSettings(storedPresetName);
+    managerConfig.onPresetActivated();
     updatePresetSelector();
     context.saveSettingsDebounced();
     toastr.success(managerConfig.t`Preset "${escapeHtml(storedPresetName)}" loaded successfully`);
@@ -620,7 +705,7 @@ export function applyActivePreset() {
 }
 
 export function applyPresetToSettings(presetName) {
-    const { context, settings } = getContextAndSettings();
+    const { settings } = getContextAndSettings();
     if (!settings) return;
 
     const preset = settings.presets?.[presetName];
@@ -635,22 +720,9 @@ export function applyPresetToSettings(presetName) {
     managerConfig.applyAllThemeSettings();
     managerConfig.updateSettingsUI();
 
-    if (settings.syncBackgroundWithPreset === true) {
+    if (settings.enabled && settings.syncBackgroundWithPreset === true) {
         void applyPresetBackground(presetName).catch(() => {});
     }
-
-    setTimeout(() => {
-        managerConfig.themeCustomSettings.forEach(({ varId, type }) => {
-            const value = settings[varId];
-            if (value === undefined) return;
-
-            if (type === 'color') {
-                managerConfig.updateColorPickerUI(varId, value);
-            } else if (type === 'select') {
-                managerConfig.updateSelectUI(varId, value);
-            }
-        });
-    }, 100);
 }
 
 export function updatePresetSelector() {
@@ -671,41 +743,53 @@ export function updatePresetSelector() {
     }
 }
 
-export function handleMoonlitPresetImport(jsonData) {
-    const presetName = importPresetSnapshot(jsonData);
-    if (!presetName) {
-        toastr.error('Invalid Moonlit Echoes preset format');
+export async function handleMoonlitPresetImport(jsonData) {
+    try {
+        const data = cloneJsonData(jsonData);
+        const importData = validatePresetImportData(data);
+        const { context, settings } = getContextAndSettings();
+        if (!importData || !settings) throw new Error('Invalid preset data');
+
+        const overwrite = Boolean(resolveStoredPresetName(settings.presets, importData.presetName));
+        const hasCustomCss = Boolean(importData.settings.rawCustomCss?.trim());
+        if (overwrite || hasCustomCss) {
+            const importStateIsCurrent = createImportStateCheck();
+            const message = [
+                overwrite ? managerConfig.t`A preset named '${escapeHtml(importData.presetName)}' already exists. Replace it?` : '',
+                hasCustomCss ? managerConfig.t`This preset contains raw CSS, which can change the interface and load remote content. Import it only if you trust its source.` : '',
+            ].filter(Boolean).join('<br><br>');
+            const confirmed = await context.Popup.show.confirm(managerConfig.t`Import Preset`, message);
+            if (confirmed !== context.POPUP_RESULT.AFFIRMATIVE) return false;
+
+            if (!importStateIsCurrent()) {
+                toastr.error(managerConfig.t`Settings changed while confirming. Import the file again.`);
+                return false;
+            }
+        }
+
+        const presetName = importPresetSnapshot(data, { overwrite });
+        if (!presetName) throw new Error('Invalid preset data or preset name collision');
+        toastr.success(managerConfig.t`Preset "${escapeHtml(presetName)}" imported successfully`);
+        return true;
+    } catch {
+        toastr.error(managerConfig.t`Unable to import preset: invalid file or preset data`);
         return false;
     }
-
-    toastr.success(managerConfig.t`Preset "${escapeHtml(presetName)}" imported successfully`);
-    return true;
 }
 
 export function syncMoonlitPresetsWithThemeList() {
-    const { settings } = getContextAndSettings();
-    if (!settings || !settings.presets) return;
+    const { context, settings } = getContextAndSettings();
+    if (!settings?.enabled || !settings.presets) return;
 
     const themeSelector = document.getElementById('themes');
     if (!themeSelector) return;
 
-    if (settings.enabled) {
-        const activePreset = settings.activePreset;
-        const currentThemeValue = themeSelector.value;
-        const isCurrentThemeMoonlitPreset = Object.prototype.hasOwnProperty.call(settings.presets, currentThemeValue);
-
-        if (isCurrentThemeMoonlitPreset) {
-            let optionExists = false;
-            for (let i = 0; i < themeSelector.options.length; i++) {
-                if (themeSelector.options[i].value === activePreset) {
-                    optionExists = true;
-                    break;
-                }
-            }
-
-            if (optionExists && themeSelector.value !== activePreset) {
-                themeSelector.value = activePreset;
-            }
-        }
+    const activePreset = settings.activePreset;
+    if (
+        Object.hasOwn(settings.presets, activePreset) &&
+        Array.from(themeSelector.options).some(option => option.value === activePreset) &&
+        (themeSelector.value !== activePreset || context.powerUserSettings?.theme !== activePreset)
+    ) {
+        managerConfig.updateThemeSelector(activePreset);
     }
 }

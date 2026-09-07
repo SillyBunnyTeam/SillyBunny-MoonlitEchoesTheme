@@ -2,7 +2,7 @@ import { t } from '../../../../../i18n.js';
 import { EXTENSION_FOLDER_PATH } from '../config/theme-info.js';
 import { themeCustomSettings } from '../config/theme-settings.js';
 import { getSettings as getExtensionSettings, saveSettings as saveExtensionSettings } from '../services/settings-service.js';
-import { rgbaToHex, hexToRgba, parseColorValue } from '../utils/color.js';
+import { hexToRgba, parseColorValue } from '../utils/color.js';
 
 const SETTINGS_STYLES_ID = 'moonlit-modern-styles';
 const SETTINGS_STYLES_URL = new URL('./settings-factory.css', import.meta.url).href;
@@ -75,8 +75,11 @@ export function createCustomSettingsUI(container, settings) {
         const categoryContainer = document.createElement('div');
         categoryContainer.classList.add('theme-setting-category');
 
-        const titleContainer = document.createElement('div');
+        const titleContainer = document.createElement('button');
+        titleContainer.type = 'button';
         titleContainer.classList.add('theme-category-header');
+        titleContainer.setAttribute('aria-expanded', 'false');
+        titleContainer.setAttribute('aria-controls', `cts-category-${category}`);
         titleContainer.style.cursor = 'pointer';
         titleContainer.style.display = 'flex';
         titleContainer.style.alignItems = 'center';
@@ -86,19 +89,22 @@ export function createCustomSettingsUI(container, settings) {
 
         const toggleIcon = document.createElement('i');
         toggleIcon.classList.add('fa', 'fa-chevron-down');
+        toggleIcon.setAttribute('aria-hidden', 'true');
         toggleIcon.style.marginRight = '8px';
         toggleIcon.style.transition = 'transform 0.3s';
         toggleIcon.style.transform = 'rotate(-90deg)';
 
         const categoryTitle = document.createElement('h4');
-        categoryTitle.textContent = categoryNames[category] || category;
         categoryTitle.style.margin = '0';
 
         titleContainer.appendChild(toggleIcon);
-        titleContainer.appendChild(categoryTitle);
-        categoryContainer.appendChild(titleContainer);
+        titleContainer.append(categoryNames[category] || category);
+        categoryTitle.appendChild(titleContainer);
+        categoryContainer.appendChild(categoryTitle);
 
         const contentContainer = document.createElement('div');
+        contentContainer.id = `cts-category-${category}`;
+        contentContainer.inert = true;
         contentContainer.classList.add('theme-category-content');
         contentContainer.style.transition = 'max-height 0.3s ease-out, opacity 0.2s ease-out';
         contentContainer.style.overflow = 'hidden';
@@ -127,6 +133,8 @@ export function createCustomSettingsUI(container, settings) {
                 toggleIcon.style.transform = 'rotate(-90deg)';
             }
             isCollapsed = !isCollapsed;
+            contentContainer.inert = isCollapsed;
+            titleContainer.setAttribute('aria-expanded', String(!isCollapsed));
         });
 
         categoryContainer.appendChild(contentContainer);
@@ -163,6 +171,19 @@ export function createSettingItem(container, setting, settings) {
             break;
     }
 
+    const label = settingContainer.querySelector('label');
+    const controls = settingContainer.querySelectorAll('input, select, textarea');
+    const description = settingContainer.querySelector('small');
+    if (label && controls.length) {
+        label.id = `cts-${setting.varId}-label`;
+        label.htmlFor = setting.type === 'color' ? `cts-${setting.varId}-text` : controls[0].id;
+        if (description) description.id = `cts-${setting.varId}-description`;
+        controls.forEach(control => {
+            if (!control.hasAttribute('aria-label')) control.setAttribute('aria-labelledby', label.id);
+            if (description) control.setAttribute('aria-describedby', description.id);
+        });
+    }
+
     container.appendChild(settingContainer);
 }
 
@@ -195,10 +216,12 @@ function createColorPicker(container, setting, settings) {
     colorPreview.style.background = currentValue;
     colorPreview.style.cursor = 'pointer';
     colorPreview.style.boxShadow = '0 1px 3px var(--SmartThemeShadowColor)';
+    colorPreview.style.position = 'relative';
 
     const textInput = document.createElement('input');
     textInput.id = `cts-${varId}-text`;
     textInput.type = 'text';
+    textInput.setAttribute('aria-label', `${setting.displayText}: ${t`Colour value`}`);
     textInput.value = literalColor?.hex || currentValue;
     textInput.classList.add('color-input-text');
     textInput.style.flex = '1';
@@ -213,11 +236,16 @@ function createColorPicker(container, setting, settings) {
     const colorInput = document.createElement('input');
     colorInput.id = `cts-${varId}-color`;
     colorInput.type = 'color';
+    colorInput.setAttribute('aria-label', `${setting.displayText}: ${t`Colour picker`}`);
     colorInput.value = initialHexValue || '#ffffff';
-    colorInput.style.width = '1px';
-    colorInput.style.height = '1px';
+    colorInput.style.width = '100%';
+    colorInput.style.height = '100%';
     colorInput.style.opacity = '0';
     colorInput.style.position = 'absolute';
+    colorInput.style.inset = '0';
+    colorInput.style.margin = '0';
+    colorInput.style.padding = '0';
+    colorInput.style.cursor = 'pointer';
     colorInput.style.pointerEvents = 'auto';
 
     const alphaContainer = document.createElement('div');
@@ -241,6 +269,7 @@ function createColorPicker(container, setting, settings) {
     const alphaSlider = document.createElement('input');
     alphaSlider.id = `cts-${varId}-alpha`;
     alphaSlider.type = 'range';
+    alphaSlider.setAttribute('aria-label', `${setting.displayText}: ${t`Opacity`}`);
     alphaSlider.min = '0';
     alphaSlider.max = '100';
     alphaSlider.step = '1';
@@ -250,7 +279,6 @@ function createColorPicker(container, setting, settings) {
     alphaSlider.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
     alphaSlider.style.borderRadius = '2px';
     alphaSlider.style.appearance = 'none';
-    alphaSlider.style.outline = 'none';
 
     const alphaValue = document.createElement('span');
     alphaValue.id = `cts-${varId}-alpha-value`;
@@ -275,7 +303,7 @@ function createColorPicker(container, setting, settings) {
             : parseCssColorValue(inputValue);
 
         if (!parsedColor) {
-            restoreTextInput();
+            restoreColor();
             return;
         }
 
@@ -283,10 +311,6 @@ function createColorPicker(container, setting, settings) {
             updateText: isHexInput,
             dispatchColorChanged: isHexInput,
         });
-    });
-
-    colorPreview.addEventListener('click', () => {
-        colorInput.click();
     });
 
     colorInput.addEventListener('input', () => {
@@ -304,7 +328,7 @@ function createColorPicker(container, setting, settings) {
     });
 
     textInput.addEventListener('focusout', () => {
-        if (!isSixDigitHex(textInput.value.trim())) restoreTextInput();
+        if (!isSixDigitHex(textInput.value.trim())) restoreColor();
     });
 
     function commitCurrentControls() {
@@ -336,9 +360,8 @@ function createColorPicker(container, setting, settings) {
         if (updateText) textInput.value = color.hex;
     }
 
-    function restoreTextInput() {
-        const previousValue = settings[varId] || defaultValue;
-        textInput.value = rgbaToHex(previousValue) || previousValue;
+    function restoreColor() {
+        updateColorPickerUI(varId, settings[varId] || defaultValue);
     }
 
     alphaRow.appendChild(alphaSlider);
@@ -346,10 +369,10 @@ function createColorPicker(container, setting, settings) {
     alphaContainer.appendChild(alphaLabel);
     alphaContainer.appendChild(alphaRow);
 
+    colorPreview.appendChild(colorInput);
     colorPickerContainer.appendChild(colorPreview);
     colorPickerContainer.appendChild(textInput);
     colorPickerContainer.appendChild(alphaContainer);
-    colorPickerContainer.appendChild(colorInput);
 
     container.appendChild(colorPickerContainer);
 
@@ -450,7 +473,7 @@ function createSlider(container, setting, settings) {
     slider.min = min;
     slider.max = max;
     slider.step = step;
-    slider.value = settings[varId] || defaultValue;
+    slider.value = settings[varId] ?? defaultValue;
     slider.classList.add('moonlit-neo-range-input');
     slider.style.flex = '1';
 
@@ -460,7 +483,7 @@ function createSlider(container, setting, settings) {
     numberInput.min = min;
     numberInput.max = max;
     numberInput.step = step;
-    numberInput.value = settings[varId] || defaultValue;
+    numberInput.value = slider.value;
     numberInput.classList.add('moonlit-neo-range-input');
     numberInput.style.width = '60px';
 
@@ -470,8 +493,13 @@ function createSlider(container, setting, settings) {
     });
 
     numberInput.addEventListener('change', () => {
+        if (!numberInput.validity.valid || !Number.isFinite(numberInput.valueAsNumber)) {
+            numberInput.value = slider.value;
+            return;
+        }
         slider.value = numberInput.value;
-        commitSettingChange(settings, context, varId, numberInput.value);
+        numberInput.value = slider.value;
+        commitSettingChange(settings, context, varId, slider.value);
     });
 
     sliderContainer.appendChild(slider);
@@ -531,7 +559,9 @@ function createTextareaInput(container, setting, settings) {
     textarea.value = (settings[varId] ?? defaultValue) || '';
 
     const applyChange = varId === 'rawCustomCss'
-        ? (_varId, value) => applyRawCustomCssFn(value)
+        ? (_varId, value) => {
+            if (settings.enabled !== false) applyRawCustomCssFn(value);
+        }
         : null;
     const apply = () => {
         commitSettingChange(settings, context, varId, textarea.value, applyChange);
@@ -735,7 +765,7 @@ function updateSliderUI(varId, value) {
 
     const numberInput = document.querySelector(`#cts-number-${varId}`);
     if (numberInput) {
-        numberInput.value = value;
+        numberInput.value = slider ? slider.value : value;
     }
 }
 

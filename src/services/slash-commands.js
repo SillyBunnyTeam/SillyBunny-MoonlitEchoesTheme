@@ -37,41 +37,6 @@ export function initializeSlashCommands() {
     }
 
     SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-        name: 'echostyle',
-        description: t`Switch to Echo chat style`,
-        callback: () => switchChatStyle('3'),
-        helpString: t`Switch to Echo chat style by Moonlit Echoes Theme`,
-    }));
-
-    SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-        name: 'whisperstyle',
-        description: t`Switch to Whisper chat style`,
-        callback: () => switchChatStyle('4'),
-        helpString: t`Switch to Whisper chat style by Moonlit Echoes Theme`,
-    }));
-
-    SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-        name: 'hushstyle',
-        description: t`Switch to Hush chat style`,
-        callback: () => switchChatStyle('5'),
-        helpString: t`Switch to Hush chat style by Moonlit Echoes Theme`,
-    }));
-
-    SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-        name: 'ripplestyle',
-        description: t`Switch to Ripple chat style`,
-        callback: () => switchChatStyle('6'),
-        helpString: t`Switch to Ripple chat style by Moonlit Echoes Theme`,
-    }));
-
-    SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-        name: 'tidestyle',
-        description: t`Switch to Tide chat style`,
-        callback: () => switchChatStyle('7'),
-        helpString: t`Switch to Tide chat style by Moonlit Echoes Theme`,
-    }));
-
-    SlashCommandParser.addCommandObject(SlashCommand.fromProps({
         name: 'moonlit-bubble',
         description: t`Switch to Bubble chat style`,
         callback: () => switchChatStyle('1'),

@@ -1,6 +1,6 @@
 # Moonlit Echoes Theme for SillyBunny
 
-**English** | [繁體中文](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/README-zh_Hant.md)
+**English** | [繁體中文](.github/README-zh_Hant.md)
 
 > [!IMPORTANT]
 > This repository is a **SillyBunny-specific fork** of [RivelleDays/SillyTavern-MoonlitEchoesTheme](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme).
@@ -10,15 +10,15 @@
 > Fork issues, SillyBunny layout bugs, and compatibility reports should be directed to **purachina** on GitHub through this repository:
 > <https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/issues>
 
-This fork keeps Moonlit Echoes isolated as a third-party SillyBunny extension and carries its own mobile layout guardrails and SillyBunny shell compatibility CSS without requiring SillyBunny core changes.
+I keep this fork as a standalone third-party SillyBunny extension. SillyBunny owns the navigation, composer sizing and chat layouts; Moonlit supplies their theme styling. The optional bundled-file installers need host support, as explained below, but the theme itself doesn't require core changes.
 
-SillyBunny note: Echo, Whisper, Hush, Ripple and Tide are built into SillyBunny core now, so I've taken them out of this extension. Both halves used to fight over the same dropdown, which meant your chat style didn't survive a refresh. Pick them from Appearance or the slash commands as before. One gotcha: the bundled UI theme files still carry `chat_display: 0`, so importing one drops you back to Flat.
+SillyBunny note: Echo, Whisper, Hush, Ripple and Tide are built into SillyBunny core now, so I've taken their layout selection out of this extension. Both halves used to fight over the same dropdown, which meant your chat style didn't survive a refresh. Pick them from Appearance or the slash commands as before. Rivelle's original 'Glimmer' and 'Moonlit Echoes' UI exports still carry `chat_display: 0`, so importing those drops you back to Flat. The generated Regex Agent palette companions leave your chat layout alone.
 
 ![Moonlit Echoes running in SillyBunny](.github/SillyBunnyPreview/hero-home.png)
 
 **Moonlit Echoes 月下回聲** is a UI theme originally designed for SillyTavern. This repository adapts it for **SillyBunny** while preserving the upstream theme's modern, elegant, minimalist interface and desktop/mobile experience.
 
-Moonlit Echoes was first released on the SillyTavern Discord server on November 25, 2024, and has been continuously updated with valuable feedback and support from the community. Eventually, to improve maintainability and ease of updates—and to satisfy my obsession with well-designed themes—I developed this as a SillyTavern extension and made it open-source on GitHub.
+Rivelle first released Moonlit Echoes on the SillyTavern Discord server on November 25, 2024, then made it an open-source SillyTavern extension. I maintain the SillyBunny-specific changes in this fork; the original theme and its author credit remain hers.
 
 | UI Interface | System Messages |
 |----------------------|-------------------|
@@ -27,11 +27,11 @@ Moonlit Echoes was first released on the SillyTavern Discord server on November 
 ## Features
 
 ### Core Features
-- **Multiple Message Styles**: In addition to SillyTavern’s default "Flat," "Bubble," and "Document" layouts, this theme introduces unique styles like "Echo," "Whisper," "Hush," "Ripple," and "Tide," designed for different chat scenarios with extra customization options available.
-- **Cross-Platform Friendly**: Optimized for both desktop and mobile, with wider input fields and adaptive layouts—ideal for detail-oriented users and those on mobile devices.
+- **Multiple Message Styles**: Moonlit styles SillyBunny's native 'Flat', 'Bubble', 'Document', 'Echo', 'Whisper', 'Hush', 'Ripple' and 'Tide' layouts. SillyBunny handles their selection and persistence.
+- **Desktop and Mobile**: Theme colours and appearance settings for both. Options marked 'Legacy' don't replace SillyBunny's native composer or navigation sizing.
 
 ### Moonlit Echoes Theme Presets
-Users can now easily share color schemes and themes based on Moonlit Echoes Theme. These presets can sync with SillyTavern’s built-in UI themes for a seamless transition.
+You can share Moonlit colour schemes as presets and sync them with matching SillyBunny UI themes. I keep the two preset formats separate, so import each into its own menu.
 
 <img src=".github/SillyBunnyPreview/theme-presets.png" width="400">
 
@@ -39,28 +39,46 @@ Users can now easily share color schemes and themes based on Moonlit Echoes Them
 
 Moonlit Echoes includes palette companions for all 78 themes from [SillyBunny Regex Agent Themes](https://github.com/SillyBunnyTeam/SillyBunny-Regex-Agent-Themes): 37 light, 38 dark, and 3 adaptive. They are added to the Moonlit preset menu once without replacing the active preset or any existing preset with the same name. Deleting one keeps it deleted on later starts.
 
-The 75 fixed light and dark presets have matching SillyBunny UI themes. Use the palette button in the Moonlit preset toolbar to install all of them at once, then reload SillyBunny; existing themes with the same name are skipped. To reinstall or update the bundled UI themes, use the labeled **Reinstall / Update Bundled UI Themes** button below the toolbar, confirm the overwrite, then reload SillyBunny; only same-name bundled themes are replaced. The 3 adaptive presets intentionally have no UI companion because they follow the currently active SillyBunny colors.
+The 75 fixed light and dark presets have matching SillyBunny UI themes. Use the palette button in the Moonlit preset toolbar to install the missing ones, then reload SillyBunny; existing themes with the same name are skipped. To reinstall or update the bundled UI themes, use the labelled **Reinstall / Update Bundled UI Themes** button below the toolbar, confirm the overwrite, then reload SillyBunny; only same-name bundled themes are replaced. The 3 adaptive presets intentionally have no UI companion because they follow the currently active SillyBunny colours.
 
 Use the image button beside it to install all 158 bundled backgrounds. Existing background files are skipped and never overwritten; reload SillyBunny after the install. Backgrounds are not changed when presets change unless you check **Use matching scene background when switching presets**. That option is off by default, and only the matching scene images are selected automatically; textures and the two general backgrounds remain manual choices.
+
+These optional safe installers require a host with `POST /api/themes/create` and `POST /api/backgrounds/upload-new`. Those host changes are separate and aren't merged yet; updating this extension doesn't add the routes. Existing filenames return HTTP 409 and are skipped. On older hosts, a missing route (HTTP 404) stops the install safely, without falling back to an overwrite. The explicit **Reinstall / Update Bundled UI Themes** action still uses `POST /api/themes/save` after your confirmation. You can keep using the theme and import files manually without the new routes.
 
 Every preset is also available as an individual `[Moonlit] ...json` file in [`theme/`](theme/), alongside the unprefixed UI theme files, for manual import or sharing.
 
 These companions translate palettes only. Regex Agent Themes remains responsible for its tracker-local typography, frames, ornaments, scanlines, and animation. Both projects are AGPL-3.0, and generated names retain the source author credit.
 
-Regenerate or verify the committed catalog from sibling checkouts with:
+Regenerate or verify the committed catalogue from sibling checkouts with:
 
 ```bash
 node tools/generate-regex-agent-presets.mjs
-node tools/generate-regex-agent-presets.mjs --check
+node tools/generate-regex-agent-presets.mjs --check --source=../SillyBunny-Regex-Agent-Themes
+node --test test/*.test.mjs
 ```
+
+The tests need Node.js 24 or newer. The [checks workflow](.github/workflows/checks.yml) checks out Regex Agent Themes at `3c8e708f8c86e77a92f23526c738e87c82df98c9` (v1.0.1) beside this repository, then checks syntax, locale JSON, tests and generated files. It doesn't install packages or run the screenshot tool.
 
 ## Screenshots
 
-The screenshots below were taken in **SillyBunny v1.7.0** running this fork, with Rivelle's **"Glimmer (微光)"** UI theme and its matching Moonlit preset applied. They are captured, not composed—[`tools/capture-sillybunny-screenshots.js`](tools/capture-sillybunny-screenshots.js) drives a real SillyBunny instance and reproduces the whole set.
+The existing screenshots below were taken in **SillyBunny v1.7.0** running this fork, with Rivelle's **'Glimmer (微光)'** UI theme and its matching Moonlit preset applied. They were captured from SillyBunny. The [capture tool](tools/capture-sillybunny-screenshots.js) can refresh the set using a disposable test instance.
+
+### Refreshing the Screenshots
+
+I only use disposable test data for this. Start a separate SillyBunny instance with its own test data directory, no private chats, and the stock Bunny Guide (`default_SillyBunnyGuide.png`). Prepare the Glimmer UI theme and the background in that profile first. A fresh browser window doesn't make a real account safe to capture: Home and Characters can expose account data too.
+
+The tool requires `--disposable-test-profile` as an explicit acknowledgement. It changes host theme, preset and background settings and writes PNG files; it doesn't restore those settings. The flag can't detect whether your account is actually disposable. It selects and verifies Bunny Guide before capture, and stops if the chat identity changes. The temporary system message is display-only, never added to chat history, and its exact element is removed even if setup or capture fails.
+
+```bash
+node tools/capture-sillybunny-screenshots.js --help
+node tools/capture-sillybunny-screenshots.js --disposable-test-profile --url=http://127.0.0.1:4444 --sillybunny=/path/to/SillyBunny --out=/tmp/moonlit-shots
+```
+
+`--help` needs no host or Playwright. Use either `--desktop-only` or `--mobile-only` to limit the set, never both. Playwright must already be available from the supplied checkout or your environment.
 
 ### Chat Styles
 
-Flat, Bubble, and Document are SillyBunny's own message layouts; Echo, Whisper, Hush, Ripple, and Tide are added by this extension. Every shot is the same conversation, so the differences you see are the styles themselves.
+All eight message layouts are native to SillyBunny. Moonlit supplies the styling shown here. Every shot uses the same conversation so you can compare the styles.
 
 **Flat**
 ![Flat chat style](.github/SillyBunnyPreview/style-1-flat.png)
@@ -71,7 +89,7 @@ Flat, Bubble, and Document are SillyBunny's own message layouts; Echo, Whisper, 
 **Document**
 ![Document chat style](.github/SillyBunnyPreview/style-3-document.png)
 
-**Echo** — the signature Moonlit style
+**Echo** - originally a Moonlit style, now a native SillyBunny layout
 ![Echo chat style](.github/SillyBunnyPreview/style-4-echo.png)
 
 **Whisper**
@@ -157,7 +175,7 @@ The Moonlit Echoes theme extension is ready to use after installation. However, 
 The newly added **"Glimmer (微光)"** theme in version 2.5.0 is especially recommended. This theme was specially designed for this release—minimalist, versatile, and perfect for using your phone under the covers at night.
 You can find it in the GitHub theme folder or download it directly below:
 
-- [Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/Glimmer%20-%20by%20Rivelle.json) → for SillyTavern User Settings
+- [Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/Glimmer%20-%20by%20Rivelle.json) → for SillyBunny User Settings
 - [[Moonlit] Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/%5BMoonlit%5D%20Glimmer%20-%20by%20Rivelle.json) → for Moonlit Echoes Theme Presets
 
 No need to tweak anything—just drop the file in and you’re good to go!
@@ -184,21 +202,21 @@ If you still need the original Termux guidance, here’s how upstream SillyTaver
 # Usage Guide
 
 ## How to Use the Moonlit Echoes Theme Preset?
-The Moonlit Echoes theme preset is partially synced with the UI themes in SillyTavern. If there are matching options in the menu, switching either one will sync the settings accordingly.
+Moonlit Echoes presets can sync with SillyBunny UI themes when both menus have matching names. Switching either one applies the matching settings when the extension is enabled.
 
-However, the Moonlit Echoes theme preset is fundamentally separate from SillyTavern’s UI themes. The Moonlit Echoes Theme does NOT create or modify any SillyTavern UI themes.
+The formats remain separate. Switching or importing a Moonlit preset doesn't create a native UI theme file. The optional install button creates missing bundled UI themes; **Reinstall / Update Bundled UI Themes** can replace same-name files after confirmation.
 
 ### Import & Export
 - Moonlit Echoes theme preset files follow the format `[Moonlit] PresetName.json` (e.g., `[Moonlit] Honey Cream.json`). There is a half-width space after `[Moonlit]`
 - This does not affect functionality. You do **NOT** need to remove `[Moonlit] ` before importing—just import the file directly
-- If the imported preset does not sync with SillyTavern UI themes, **reload the page** or **select a different theme** to apply the changes
+- If the imported preset does not sync with SillyBunny UI themes, **reload the page** or **select a different theme** to apply the changes
 
 ## FAQ
 
 ### Q: The layout looks broken or doesn’t work with other extensions?
 **A:** Yes, despite my best efforts, I can’t guarantee full compatibility with every third-party SillyTavern extension. If you run into any issues, please try the following troubleshooting steps:
 
-1. Make sure you're using the latest version of SillyTavern with the latest version of Chrome.  
+1. Make sure you're using the latest version of SillyBunny with the latest version of Chrome.
 2. Temporarily disable this theme extension to check whether it’s the cause.  
    If it is—or if the third-party extension you're using isn't supported yet—feel free to report it.
 

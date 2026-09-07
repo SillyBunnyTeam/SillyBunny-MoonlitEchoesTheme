@@ -78,11 +78,8 @@ export function ensureSettingsStructure(settings) {
         });
     }
 
-    if (settings.presets['Moonlit Echoes']) {
-        if (!settings.presets[BUILT_IN_PRESET_NAME]) {
-            settings.presets[BUILT_IN_PRESET_NAME] = settings.presets['Moonlit Echoes'];
-        }
-
+    if (Object.hasOwn(settings.presets, 'Moonlit Echoes') && !Object.hasOwn(settings.presets, BUILT_IN_PRESET_NAME)) {
+        settings.presets[BUILT_IN_PRESET_NAME] = settings.presets['Moonlit Echoes'];
         delete settings.presets['Moonlit Echoes'];
 
         if (settings.activePreset === 'Moonlit Echoes') {

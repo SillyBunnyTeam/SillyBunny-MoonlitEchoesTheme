@@ -1,9 +1,9 @@
 {
   "moonlitEchoesPreset": true,
-  "presetVersion": "2.4.1",
+  "presetVersion": "3.2.0-sb18",
   "presetName": "Glimmer - by Rivelle",
   "settings": {
-    "customThemeColor": "rgba(81, 160, 222, 1)",
+    "customThemeColor": "rgba(85, 164, 226, 1)",
     "customThemeColor2": "rgba(255, 255, 255, 1)",
     "customBgColor1": "rgba(255, 255, 255, 0.1)",
     "customBgColor2": "rgba(255, 255, 255, 0.05)",

@@ -1,0 +1,37 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: SillyBunny-MoonlitEchoesTheme
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: SillyBunny-MoonlitEchoesTheme
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: SillyBunnyTeam/SillyBunny-Regex-Agent-Themes
+          ref: 3c8e708f8c86e77a92f23526c738e87c82df98c9
+          path: SillyBunny-Regex-Agent-Themes
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check JavaScript syntax
+        run: git ls-files -z -- '*.js' '*.mjs' | xargs -0 -r -n 1 node --check
+      - name: Parse locale dictionaries
+        run: node --input-type=module -e 'import { readFileSync, globSync } from "node:fs"; for (const file of globSync("i18n/*.json")) JSON.parse(readFileSync(file, "utf8"));'
+      - name: Run built-in Node tests
+        run: node --test test/*.test.mjs
+      - name: Check generated presets
+        run: node tools/generate-regex-agent-presets.mjs --check --source=../SillyBunny-Regex-Agent-Themes

@@ -24,7 +24,7 @@ async function withGlobals(values, callback) {
     }
 }
 
-function createEnvironment({ existingNames = [], fetch } = {}) {
+function createEnvironment({ existingNames = [], inventory = () => ({ themes: existingNames.map(name => ({ name })) }), fetch } = {}) {
     const themeSelect = { options: existingNames.map(value => ({ value })) };
     const context = { getRequestHeaders: () => requestHeaders };
 
@@ -36,7 +36,9 @@ function createEnvironment({ existingNames = [], fetch } = {}) {
                 return null;
             },
         },
-        fetch,
+        fetch: async (url, options) => url === '/api/settings/get'
+            ? { ok: true, json: inventory }
+            : fetch(url, options),
     };
 }
 
@@ -64,7 +66,7 @@ test('default mode skips existing names without posting them', async () => {
         existingNames: [existingName],
         fetch: async (url, options) => {
             calls.push({ url, options });
-            return { ok: true };
+            return { ok: true, status: 201 };
         },
     });
 
@@ -73,6 +75,7 @@ test('default mode skips existing names without posting them', async () => {
 
         assert.deepEqual(result, { installed: 74, skipped: 1 });
         assert.equal(calls.length, 74);
+        assert(calls.every(({ url }) => url === '/api/themes/create'));
         assert(calls.every(({ options }) => JSON.parse(options.body).name !== existingName));
     });
 });
@@ -97,7 +100,7 @@ test('overwrite mode posts the full corrected Marshmallow theme', async () => {
         assert.equal(call.options.method, 'POST');
         assert.deepEqual(call.options.headers, requestHeaders);
         assert.equal(call.options.body, JSON.stringify(marshmallow));
-        assert.equal(JSON.parse(call.options.body).quote_text_color, 'rgba(247, 143, 179, 1)');
+        assert.equal(JSON.parse(call.options.body).quote_text_color, 'rgba(17, 19, 24, 1)');
     });
 });
 
@@ -128,6 +131,131 @@ test('non-2xx responses reject with the failing theme name', async () => {
             installRegexAgentUiThemes({ overwriteExisting: true }),
             error => error.message === `Failed to save UI theme "${failingName}"`,
         );
+    });
+});
+
+test('repeated installs read fresh inventory and preserve edits despite a stale or missing dropdown', async () => {
+    const stored = new Map();
+    let reads = 0;
+    let writes = 0;
+    const environment = createEnvironment({
+        existingNames: REGEX_AGENT_UI_THEMES.map(({ name }) => name),
+        inventory: async () => { reads++; return { themes: [...stored.values()] }; },
+        fetch: async (url, options) => {
+            assert.equal(url, '/api/themes/create');
+            const theme = JSON.parse(options.body);
+            stored.set(theme.name, theme);
+            writes++;
+            return { ok: true, status: 201 };
+        },
+    });
+    await withGlobals(environment, async () => {
+        assert.deepEqual(await installRegexAgentUiThemes(), { installed: 75, skipped: 0 });
+        stored.get(REGEX_AGENT_UI_THEMES[0].name).custom_css = 'personal edit';
+        document.getElementById = () => null;
+        assert.deepEqual(await installRegexAgentUiThemes(), { installed: 0, skipped: 75 });
+        assert.equal(reads, 2);
+        assert.equal(writes, 75);
+        assert.equal(stored.get(REGEX_AGENT_UI_THEMES[0].name).custom_css, 'personal edit');
+    });
+});
+
+test('concurrent creates count conflicts as skipped and preserve the winner', async () => {
+    const stored = new Map([[REGEX_AGENT_UI_THEMES[0].name, { personal: true }]]);
+    const environment = createEnvironment({
+        // Both calls see inventory from before another tab saved its personal theme.
+        fetch: async (url, options) => {
+            assert.equal(url, '/api/themes/create');
+            const theme = JSON.parse(options.body);
+            if (stored.has(theme.name)) return { ok: false, status: 409 };
+            stored.set(theme.name, theme);
+            return { ok: true, status: 201 };
+        },
+    });
+    await withGlobals(environment, async () => {
+        const results = await Promise.all([installRegexAgentUiThemes(), installRegexAgentUiThemes()]);
+        assert.equal(results.reduce((sum, result) => sum + result.installed, 0), 74);
+        assert.equal(results.reduce((sum, result) => sum + result.skipped, 0), 76);
+        assert.deepEqual(stored.get(REGEX_AGENT_UI_THEMES[0].name), { personal: true });
+    });
+});
+
+test('partial failure retries obtain fresh inventory and leave successful or edited themes alone', async () => {
+    const stored = new Map();
+    let fail = true;
+    let reads = 0;
+    const writes = [];
+    const environment = createEnvironment({
+        inventory: async () => { reads++; return { themes: [...stored.values()] }; },
+        fetch: async (url, options) => {
+            assert.equal(url, '/api/themes/create');
+            const theme = JSON.parse(options.body);
+            if (fail && stored.size === 2) return { ok: false, status: 500 };
+            writes.push(theme.name);
+            stored.set(theme.name, theme);
+            return { ok: true, status: 201 };
+        },
+    });
+    await withGlobals(environment, async () => {
+        await assert.rejects(installRegexAgentUiThemes(), /Failed to save/);
+        stored.get(REGEX_AGENT_UI_THEMES[0].name).custom_css = 'edited after partial install';
+        fail = false;
+        assert.deepEqual(await installRegexAgentUiThemes(), { installed: 73, skipped: 2 });
+        assert.equal(reads, 2);
+        assert.equal(new Set(writes).size, writes.length);
+        assert.equal(stored.get(REGEX_AGENT_UI_THEMES[0].name).custom_css, 'edited after partial install');
+    });
+});
+
+test('inventory failures and malformed inventories stop before any write', async () => {
+    const responses = [
+        { ok: false, status: 500 },
+        { ok: true, json: async () => { throw new SyntaxError('invalid JSON'); } },
+        ...[null, {}, { themes: null }, { themes: {} }, { themes: ['theme'] },
+            { themes: [null] }, { themes: [{ name: '' }] }, { themes: [{ name: '   ' }] },
+            { themes: [{ name: 'valid' }, { name: 42 }] }]
+            .map(data => ({ ok: true, json: async () => data })),
+    ];
+    for (const response of responses) {
+        const environment = createEnvironment();
+        const urls = [];
+        environment.fetch = async (url, options) => {
+            urls.push(url);
+            assert.equal(options.method, 'POST');
+            assert.equal(options.cache, 'no-store');
+            assert.deepEqual(options.headers, requestHeaders);
+            return response;
+        };
+        await withGlobals(environment, async () => {
+            await assert.rejects(installRegexAgentUiThemes());
+            assert.deepEqual(urls, ['/api/settings/get']);
+        });
+    }
+});
+
+test('old hosts and unexpected create responses fail without falling back to overwrite', async () => {
+    for (const status of [404, 200]) {
+        const urls = [];
+        const environment = createEnvironment({
+            fetch: async url => { urls.push(url); return { ok: status === 200, status }; },
+        });
+        await withGlobals(environment, async () => {
+            await assert.rejects(installRegexAgentUiThemes(), status === 404 ? /requires an updated.*host/ : /Failed to save/);
+            assert.deepEqual(urls, ['/api/themes/create']);
+        });
+    }
+});
+
+test('only explicit true enables overwrite and overwrite conflicts are failures, not skips', async () => {
+    const urls = [];
+    const environment = createEnvironment({
+        inventory: async () => ({ themes: REGEX_AGENT_UI_THEMES }),
+        fetch: async url => { urls.push(url); return { ok: false, status: 409 }; },
+    });
+    await withGlobals(environment, async () => {
+        assert.deepEqual(await installRegexAgentUiThemes({ overwriteExisting: 'true' }), { installed: 0, skipped: 75 });
+        await assert.rejects(installRegexAgentUiThemes({ overwriteExisting: true }), /Failed to save/);
+        assert.deepEqual(urls, ['/api/themes/save']);
     });
 });
 

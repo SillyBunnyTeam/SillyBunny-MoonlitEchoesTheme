@@ -1,12 +1,20 @@
-# Moonlit Echoes Theme
+# Moonlit Echoes Theme for SillyBunny
 
-[English](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/)｜**繁體中文**
+[English](../README.md)｜**繁體中文**
+
+> [!IMPORTANT]
+> 這是 [RivelleDays/SillyTavern-MoonlitEchoesTheme](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme) 的 **SillyBunny 專用分支**，僅供 SillyBunny 使用。原版 SillyTavern 請安裝上游專案。
+> 此分支由 **purachina** 維護；分支問題與 SillyBunny 相容性回報請提交至[本專案的 Issues](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/issues)。
+
+我將此分支維持為獨立的第三方擴充。導覽、訊息輸入欄尺寸與聊天版面由 SillyBunny 負責，Moonlit 提供主題外觀。一般主題功能不需要修改 SillyBunny 核心；下方的選用安裝工具則需要主程式支援新的路由。
+
+以下保留 Rivelle 的原版 SillyTavern 預覽；本分支的 SillyBunny 截圖請見[英文頁面](../README.md#screenshots)。
 
 ![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/visual_novel_mode.png)
 
-**「Moonlit Echoes 月下回聲」** 是一款供 SillyTavern 使用的介面主題。依據我的個人喜好進行調整和修改，旨在讓其更加現代、優雅、簡潔，並盡可能提供桌面與行動端更舒服的使用體驗。
+**「Moonlit Echoes 月下回聲」** 是 Rivelle 為 SillyTavern 製作的介面主題。此分支將其適配至 SillyBunny，保留原作的桌面與行動裝置主題外觀。
 
-Moonlit Echoes 最初於 2024 年 11 月 25 日在 SillyTavern Disocord 伺服器公開並更新至今，期間得到許多人的回饋和支持。最終，為了可維護性並方便使用者更新、在其他地方找到它（以及滿足我對更美觀主題的執著），我將其製作為 SillyTavern 擴充功能並於 GitHub 開源。
+Rivelle 最初於 2024 年 11 月 25 日在 SillyTavern Discord 伺服器公開 Moonlit Echoes，後來將它製作為擴充功能並於 GitHub 開源。我負責此分支的 SillyBunny 適配，原作與作者署名仍屬於 Rivelle。
 
 | UI Interface | System Messages |
 |----------------------|-------------------|
@@ -15,16 +23,24 @@ Moonlit Echoes 最初於 2024 年 11 月 25 日在 SillyTavern Disocord 伺服�
 ## 功能與特色
 
 ### 核心功能
-- **多種訊息樣式**：除了 SillyTavern 預設的「平面 (Flat)」、「氣泡 (Bubble)」和「文件 (Document)」訊息風格外，還設計了額外的聊天訊息樣式，如「回聲 (Echo)」、「低語 (Whisper)」、「寂靜 (Hush)」、「漣漪 (Ripple)」和「潮汐 (Tide)」——為不同的聊天場景設計，並提供額外的客製化選項。
-- **跨平台友好**：致力於改善桌面端和在行動裝置上的使用體驗，如具有更寬的輸入欄位和自適應佈局——非常適合注重細節或想喜歡跨設備使用的使用者。
+- **多種訊息樣式**：Flat、Bubble、Document、Echo、Whisper、Hush、Ripple 與 Tide 均為 SillyBunny 原生版面。Moonlit 提供外觀樣式，版面選擇與儲存由 SillyBunny 負責。
+- **桌面與行動裝置**：兩者皆有主題配色與外觀設定。標示「舊版」的選項不會取代 SillyBunny 原生的訊息輸入欄或導覽尺寸設定。
   
 ### Moonlit Echoes 主題預設設定檔
-使用者現在可以輕鬆分享基於 Moonlit Echoes Theme 的配色與主題，並與 SillyTavern 內建 UI 主題無縫切換。
+你可以分享 Moonlit 配色預設，並與同名的 SillyBunny UI 主題同步。兩者格式不同，請分別匯入各自的選單。
+
+此分支附帶 [SillyBunny Regex Agent Themes](https://github.com/SillyBunnyTeam/SillyBunny-Regex-Agent-Themes) 的 78 組配色預設，其中 75 組固定配色有對應的 UI 主題，另外 3 組自適應配色跟隨目前的 SillyBunny 顏色。預設只會自動加入一次，不會取代目前使用的預設或同名項目；刪除後也不會在下次啟動時重新加入。
+
+使用預設工具列的調色盤按鈕安裝缺少的 UI 主題，圖片按鈕則安裝 158 張隨附背景。同名檔案會略過，不會覆寫；安裝後請重新載入 SillyBunny。若要覆寫同名的隨附 UI 主題，請使用下方的「重新安裝 / 更新隨附 UI 主題」按鈕並確認。背景預設不會隨配色切換，除非你勾選「切換預設時使用對應的場景背景」。
+
+這兩個選用的安全安裝工具需要主程式支援 `POST /api/themes/create` 與 `POST /api/backgrounds/upload-new`。相關主程式變更尚未合併，更新此擴充不會新增這些路由。檔名已存在時會略過 HTTP 409 回應；舊版主程式若回傳 HTTP 404，安裝會安全停止，不會改用覆寫路由。「重新安裝 / 更新隨附 UI 主題」仍會在你確認後使用 `POST /api/themes/save`。沒有新路由也能正常使用主題，或手動匯入檔案。
 
 <img src="https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/moonlit_theme_presets.png" width="500">
 
 ## 螢幕截圖
-以下截圖來自 **2.5.0** 版本，在使用 Chrome 的 MacBook 上截取，展示了 2.5.0 中新增的 **「微光 (Glimmer)」** 主題。
+以下是 Rivelle 的上游 **2.5.0** 截圖，在使用 Chrome 的 MacBook 上截取，展示當時新增的 **「微光 (Glimmer)」** 主題，不代表此分支新增了原生聊天版面。
+
+若要更新本分支的截圖，請依照[截圖工具說明](../README.md#refreshing-the-screenshots)，只使用獨立、可拋棄且沒有私人資料的測試帳號。工具需要 `--disposable-test-profile` 確認旗標，會更改主題設定並寫入 PNG；旗標無法判斷帳號是否真的可拋棄。暫時的系統訊息只顯示在頁面，不會加入聊天紀錄。
 
 ![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/1chatstyle_flat.png)
 ![](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/.github/ImagePreview/2chatstyle_bubble.png)
@@ -38,17 +54,17 @@ Moonlit Echoes 最初於 2024 年 11 月 25 日在 SillyTavern Disocord 伺服�
 ## 安裝說明
 
 ### 前提條件
-建議使用 **最新版** 的 SillyTavern（無論是 Release 或 Staging 版本）與 Chrome 瀏覽器。
+建議使用 **最新版 SillyBunny** 與 Chrome 瀏覽器。原版 SillyTavern 請改用上游 Moonlit Echoes。
 
 ### 安裝步驟
 
-#### 1. 安裝 Moonlit Echoes Theme
-在 **SillyTavern 擴充管理器**中，點選「安裝擴充功能（Install from URL）」，貼入以下 Git URL：
+#### 1. 安裝 SillyBunny 專用分支
+在 **SillyBunny 擴充管理器**中，點選「安裝擴充功能（Install from URL）」，貼入以下 Git URL：
 ```
-https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme
+https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme
 ```
 
-#### 2. 更新 `/SillyTavern/config.yaml` 的縮圖設定
+#### 2. 更新 `/SillyBunny/config.yaml` 的縮圖設定
 雖然先前建議直接禁用縮圖功能，但這可能會影響行動裝置的圖片載入速度。以下是目前推薦並經過測試的設定：
 ```
  thumbnails:
@@ -63,20 +79,20 @@ https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme
         - 864
         - 1280
 ```
-建議在應用設定前刪除整個縮圖資料夾（通常位於 `/SillyTavern/data/default-user/thumbnails`）。別擔心——SillyTavern 會在重新啟動後自動產生新的縮圖。
+建議在應用設定前刪除整個縮圖資料夾（通常位於 `/SillyBunny/data/default-user/thumbnails`）。SillyBunny 會在重新啟動後自動產生新的縮圖。
 
 #### 3. 下載並啟用主題（強烈建議！）
-安裝後即可使用月下回聲主題擴充。不過，若想完全重現預覽圖中的畫面，建議下載 **「Glimmer（微光）」** 主題設定檔並匯入 SillyTavern 使用者設定中。
+安裝後即可使用月下回聲主題擴充。不過，若想重現預覽圖中的畫面，建議下載 Rivelle 的 **「Glimmer（微光）」** 主題設定檔並匯入 SillyBunny 使用者設定中。
 特別推薦 2.5.0 版本中新增的 **「微光（Glimmer）」** 主題。這個主題是專為本次發布設計的——極簡、通用，非常適合在晚上用手機躲在被窩裡使用。
 
 你可以在 GitHub 主題（theme）文件夾中找到它，或直接透過連結下載：
-- [Glimmer - by Rivelle.json](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/theme/Glimmer%20-%20by%20Rivelle.json) → 用於 SillyTavern 使用者設定（User Settings）
-- [[Moonlit] Glimmer - by Rivelle.json](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme/blob/main/theme/%5BMoonlit%5D%20Glimmer%20-%20by%20Rivelle.json) → 用於月下回聲主題預設（Moonlit Echoes Theme Presets）
+- [Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/Glimmer%20-%20by%20Rivelle.json) → 用於 SillyBunny 使用者設定（User Settings）
+- [[Moonlit] Glimmer - by Rivelle.json](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/blob/main/theme/%5BMoonlit%5D%20Glimmer%20-%20by%20Rivelle.json) → 用於月下回聲主題預設（Moonlit Echoes Theme Presets）
 
-無需進行任何調整或修改檔名——匯入後即可使用！
+不用修改檔名，匯入後即可使用。Rivelle 原版的「Glimmer」與「Moonlit Echoes」UI 匯出檔仍含有 `chat_display: 0`，匯入會切回 Flat；自動產生的 Regex Agent 配色檔則不會更改聊天版面。
 
-### 給 Termux 使用者 📱
-若你透過 Termux 使用 SillyTavern，以下是修改 `config.yaml` 的方法。
+### 上游 SillyTavern / Termux 說明
+此分支只供 SillyBunny 使用。若你透過 Termux 使用原版 SillyTavern，請安裝[上游專案](https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme)。以下保留原版 SillyTavern 的 `config.yaml` 修改方法。
 
 > [!Warning]
 > 我對 Android 設備或 Termux 沒有經驗，因此無法解答相關問題、測試步驟或保證結果。以下方法由其他使用者提供。
@@ -94,19 +110,19 @@ https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme
 # 使用指南
 
 ## 如何使用月下回聲主題預設？
-月下回聲主題預設與 SillyTavern 的 UI 主題部分同步。若有對應名稱，切換其中一個會自動同步設定。不過，兩者本質上是獨立存在的。月下回聲主題不會創建或修改任何 SillyTavern UI 主題。
+擴充啟用時，月下回聲預設可以與同名的 SillyBunny UI 主題同步。兩者格式仍然獨立；切換或匯入 Moonlit 預設不會建立原生 UI 主題檔案。選用的安裝按鈕會建立缺少的隨附 UI 主題，「重新安裝 / 更新隨附 UI 主題」則可在確認後覆寫同名檔案。
 
 ### 匯入與匯出
 - Moonlit Echoes 主題預設設定檔的檔案名稱格式為 `[Moonlit] 預設名稱.json`（如：`[Moonlit] Honey Cream.json`）。`[Moonlit]` 之後有一個半形空格
 - 這不會影響功能，你 **「不需要」** 在匯入前移除 `[Moonlit] `前綴，只需直接匯入文件即可
-- 若匯入的預設未與 SillyTavern 的 UI 主題同步，請重新載入頁面或選擇其他主題來套用變更
+- 若匯入的預設未與 SillyBunny 的 UI 主題同步，請重新載入頁面或選擇其他主題來套用變更
 
 ## 常見問題
 
 ### Ｑ：介面損壞、跑版或與不兼容其他擴充？
 **Ａ：** 是的，儘管我盡了最大努力，但我無法保證與每個第三方 SillyTavern 擴充完全兼容。如果你遇到任何問題，請依序嘗試以下排除方式：
 
-1. 確保你使用的是最新版本的 SillyTavern 和最新版本的 Chrome。
+1. 確保你使用的是最新版本的 SillyBunny 和最新版本的 Chrome。
 2. 暫時禁用此主題擴充，檢查是否是它造成的問題。如果是——或者你使用的第三方擴充尚未得到支持——隨時歡迎回報！
 
 月下回聲是第三方主題擴充，與官方 SillyTavern 項目無關。它是源於對 SillyTavern 的熱愛和對視覺設計的強烈偏好的個人項目。如果你遇到任何問題，請先聯繫我——我會盡力提供協助！
@@ -125,7 +141,7 @@ https://github.com/RivelleDays/SillyTavern-MoonlitEchoesTheme
 **Ａ：** 是的，這是行動裝置上的已知問題，而我暫時束手無策。切換時，畫面可能會短暫凍結數秒，請耐心等待載入完成。此問題在桌面端幾乎不會出現。
 
 # 回饋與建議
-若有任何問題或功能建議，請在 Issues 頁面提交回饋，並使用提供的模板填寫詳細資訊。
+此 SillyBunny 分支的問題與功能建議，請使用範本回報至[本專案的 Issues](https://github.com/SillyBunnyTeam/SillyBunny-MoonlitEchoesTheme/issues)，由 purachina 處理。原版 SillyTavern 與上游主題的問題請回報至 Rivelle 的原專案。
 歡迎在 Discussions 區分享配色方案！無論是 SillyTavern UI 主題還是 Moonlit Echoes 主題預設，我都很期待看到美麗的配色。
 
 # 特別感謝

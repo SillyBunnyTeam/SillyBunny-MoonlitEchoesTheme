@@ -52,13 +52,16 @@ export function createTabbedSettingsUI(container, settings) {
         { id: 'mobile-devices', label: t`Mobile Devices` },
     ];
 
-    const activeTabId = getActiveTab();
+    const activeTabId = getActiveTab(tabs);
 
     tabs.forEach((tab) => {
         const button = document.createElement('button');
+        button.type = 'button';
         button.id = `moonlit-tab-btn-${tab.id}`;
         button.classList.add('moonlit-tab-button');
         button.textContent = tab.label;
+        button.setAttribute('aria-controls', `moonlit-tab-content-${tab.id}`);
+        button.setAttribute('aria-pressed', String(tab.id === activeTabId));
 
         if (tab.id === activeTabId) {
             button.classList.add('active');
@@ -67,17 +70,26 @@ export function createTabbedSettingsUI(container, settings) {
         const content = document.createElement('div');
         content.id = `moonlit-tab-content-${tab.id}`;
         content.classList.add('moonlit-tab-content');
+        content.hidden = tab.id !== activeTabId;
 
         if (tab.id === activeTabId) {
             content.classList.add('active');
         }
 
         button.addEventListener('click', () => {
-            document.querySelectorAll('.moonlit-tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.moonlit-tab-content').forEach(node => node.classList.remove('active'));
+            tabButtons.querySelectorAll('.moonlit-tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            tabContents.querySelectorAll('.moonlit-tab-content').forEach(node => {
+                node.classList.remove('active');
+                node.hidden = true;
+            });
 
             button.classList.add('active');
+            button.setAttribute('aria-pressed', 'true');
             content.classList.add('active');
+            content.hidden = false;
             saveActiveTab(tab.id);
         });
 
@@ -187,53 +199,55 @@ function createSection(
         sectionHeader.classList.add('moonlit-first-section-header');
     }
 
-    const sectionToggle = document.createElement('div');
+    const alwaysExpanded = isFirstSection && firstSectionAlwaysExpanded;
+    const isExpanded = alwaysExpanded || getSectionExpandState(category);
+    const sectionToggle = document.createElement(alwaysExpanded ? 'div' : 'button');
     sectionToggle.classList.add('moonlit-section-toggle');
+    if (!alwaysExpanded) {
+        sectionToggle.type = 'button';
+        sectionToggle.setAttribute('aria-controls', `moonlit-section-content-${category}`);
+        sectionToggle.setAttribute('aria-expanded', String(isExpanded));
+    }
 
     const sectionTitle = document.createElement('h4');
     sectionTitle.style.margin = '0';
-    sectionTitle.style.display = 'flex';
-    sectionTitle.style.justifyContent = 'space-between';
-    sectionTitle.style.alignItems = 'center';
 
     const titleText = document.createElement('span');
     titleText.textContent = getCategoryDisplayName(category);
 
     const toggleIcon = document.createElement('i');
     toggleIcon.classList.add('fa', 'fa-chevron-down');
+    toggleIcon.setAttribute('aria-hidden', 'true');
     toggleIcon.style.transition = 'transform 0.3s ease';
 
-    if (isFirstSection && firstSectionAlwaysExpanded) {
-        sectionContainer.classList.add('expanded', 'moonlit-first-section');
+    const sectionContent = document.createElement('div');
+    sectionContent.id = `moonlit-section-content-${category}`;
+    sectionContent.classList.add('moonlit-section-content');
+    sectionContent.inert = !isExpanded;
+
+    if (isExpanded) {
+        sectionContainer.classList.add('expanded');
         toggleIcon.style.transform = 'rotate(180deg)';
+    }
+
+    if (alwaysExpanded) {
+        sectionContainer.classList.add('moonlit-first-section');
         toggleIcon.style.visibility = 'hidden';
         sectionToggle.style.cursor = 'default';
     } else {
-        const isExpanded = getSectionExpandState(category);
-        if (isExpanded) {
-            sectionContainer.classList.add('expanded');
-            toggleIcon.style.transform = 'rotate(180deg)';
-        }
-
         sectionToggle.addEventListener('click', () => {
-            sectionContainer.classList.toggle('expanded');
-
-            if (sectionContainer.classList.contains('expanded')) {
-                toggleIcon.style.transform = 'rotate(180deg)';
-                saveSectionExpandState(category, true);
-            } else {
-                toggleIcon.style.transform = 'rotate(0deg)';
-                saveSectionExpandState(category, false);
-            }
+            const expanded = sectionContainer.classList.toggle('expanded');
+            sectionContent.inert = !expanded;
+            sectionToggle.setAttribute('aria-expanded', String(expanded));
+            toggleIcon.style.transform = expanded ? 'rotate(180deg)' : 'rotate(0deg)';
+            saveSectionExpandState(category, expanded);
         });
     }
 
-    sectionTitle.append(titleText, toggleIcon);
-    sectionToggle.appendChild(sectionTitle);
-    sectionHeader.appendChild(sectionToggle);
+    sectionToggle.append(titleText, toggleIcon);
+    sectionTitle.appendChild(sectionToggle);
+    sectionHeader.appendChild(sectionTitle);
 
-    const sectionContent = document.createElement('div');
-    sectionContent.classList.add('moonlit-section-content');
     categorySettings.forEach(setting => {
         sectionContent.appendChild(createSettingContainer(setting, settings));
     });
@@ -264,7 +278,7 @@ function getSectionExpandState(category) {
     try {
         const stateKey = 'moonlit_section_states';
         const sectionStates = JSON.parse(localStorage.getItem(stateKey) || '{}');
-        return sectionStates[category] !== undefined ? sectionStates[category] : true;
+        return typeof sectionStates?.[category] === 'boolean' ? sectionStates[category] : true;
     } catch (error) {
         return true;
     }
@@ -278,9 +292,10 @@ function saveActiveTab(tabId) {
     }
 }
 
-function getActiveTab() {
+function getActiveTab(tabs) {
     try {
-        return localStorage.getItem('moonlit_active_tab') || 'core-settings';
+        const tabId = localStorage.getItem('moonlit_active_tab');
+        return tabs.some(tab => tab.id === tabId) ? tabId : 'core-settings';
     } catch (error) {
         return 'core-settings';
     }
@@ -388,11 +403,21 @@ function addCollapsibleSectionStyles() {
         padding: 10px 12px;
     }
 
-    .moonlit-first-section .moonlit-section-toggle h4 {
+    .moonlit-first-section .moonlit-section-header h4 {
         font-weight: 600;
     }
 
     .moonlit-section-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0;
+        background: none;
+        border: 0;
+        color: inherit;
+        font: inherit;
+        text-align: left;
         cursor: pointer;
         user-select: none;
     }

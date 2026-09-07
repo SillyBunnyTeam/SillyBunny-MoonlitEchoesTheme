@@ -1,6 +1,6 @@
 {
   "moonlitEchoesPreset": true,
-  "presetVersion": "3.2.0-sb17",
+  "presetVersion": "3.2.0-sb18",
   "presetName": "Rose Gold Bloom - by platberlitz",
   "settings": {
     "customThemeColor": "rgba(17, 19, 24, 1)",
@@ -11,7 +11,7 @@
     "Drawer-iconColor": "rgba(125, 71, 80, 1)",
     "sheldBackgroundColor": "rgba(254, 249, 249, 0.65)",
     "customScrollbarColor": "rgba(224, 169, 164, 1)",
-    "customlastInContext": "3px solid rgba(17, 19, 24, 1)",
+    "customlastInContext": "3px solid rgba(201, 140, 134, 1)",
     "rawCustomCss": ""
   }
 }

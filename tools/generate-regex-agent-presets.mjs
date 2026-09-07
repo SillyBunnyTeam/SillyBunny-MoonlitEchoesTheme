@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const AUTHOR = 'platberlitz';
-const CATALOG_VERSION = 3;
+const CATALOG_VERSION = 4;
 const EXPECTED_MODES = { light: 37, dark: 38, adaptive: 3 };
 const SETTINGS_FILES = [
     'src/config/theme-settings-core.js',
@@ -89,11 +89,13 @@ function parseArguments(args) {
     for (let index = 0; index < args.length; index += 1) {
         const argument = args[index];
         if (argument === '--check') {
+            assert(!parsed.check, 'Duplicate argument: --check');
             parsed.check = true;
-        } else if (argument.startsWith('--source=')) {
-            parsed.source = argument.slice('--source='.length);
-        } else if (argument === '--source' && args[index + 1]) {
-            parsed.source = args[index += 1];
+        } else if (argument === '--source' || argument.startsWith('--source=')) {
+            assert.equal(parsed.source, null, 'Only one --source argument is allowed');
+            const value = argument === '--source' ? args[index += 1] : argument.slice('--source='.length);
+            assert(value?.trim() && !value.trimStart().startsWith('-'), '--source requires a non-option path');
+            parsed.source = value;
         } else {
             throw new Error(`Unknown argument: ${argument}`);
         }
@@ -129,17 +131,17 @@ function buildRecord(theme) {
     if (tokens.mode !== 'adaptive') return fixedRecord(theme, tokens, name);
 
     const { settings, migrateFromV1, migrateFromV2 } = adaptiveSettings(tokens);
-    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, migrateFromV1, migrateFromV2, uiTheme: null };
+    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, migrateFromV1, migrateFromV2, migrateFromV3: {}, uiTheme: null };
 }
 
 function fixedRecord(theme, tokens, name) {
     const surfaces = effectiveSurfaces(tokens, theme.slug);
     const readableBackgrounds = [surfaces.body, surfaces.row, surfaces.rowAlt];
-    const primary = rgba(readableColor(tokens.accents[0], readableBackgrounds, 4.5), `${theme.slug}: primary`);
-    const quote = rgba(tokens.accents[0], `${theme.slug}: quote`);
+    const accent = rgba(tokens.accents[0], `${theme.slug}: decorative accent`);
+    const previousPrimary = rgba(readableColor(tokens.accents[0], readableBackgrounds, 4.5), `${theme.slug}: v3 primary`);
     const secondary = rgba(readableColor(tokens.accents[1], readableBackgrounds, 4.5), `${theme.slug}: secondary`);
     const settings = {
-        customThemeColor: primary,
+        customThemeColor: previousPrimary,
         customThemeColor2: secondary,
         customBgColor1: rgba(surfaces.rowAlt, `${theme.slug}: alternate row`, 0.1),
         customBgColor2: rgba(surfaces.row, `${theme.slug}: row`, 0.05),
@@ -147,7 +149,7 @@ function fixedRecord(theme, tokens, name) {
         'Drawer-iconColor': rgba(tokens.on.head, `${theme.slug}: head ink`),
         sheldBackgroundColor: rgba(surfaces.body, `${theme.slug}: shell`, 0.65),
         customScrollbarColor: rgba(tokens.line.head, `${theme.slug}: scrollbar`),
-        customlastInContext: contextMarker(tokens, primary),
+        customlastInContext: contextMarker(tokens, accent),
         rawCustomCss: '',
     };
     const migrateFromV1 = {
@@ -159,12 +161,16 @@ function fixedRecord(theme, tokens, name) {
     const migrateFromV2 = {
         sheldBackgroundColor: rgba(surfaces.body, `${theme.slug}: previous shell`, 0.2),
     };
+    const migrateFromV3 = {
+        customThemeColor: previousPrimary,
+        customlastInContext: contextMarker(tokens, previousPrimary),
+    };
     const uiTheme = {
         name,
         main_text_color: rgba(tokens.on.body, `${theme.slug}: body ink`),
         italics_text_color: rgba(tokens.on.muted, `${theme.slug}: muted ink`),
         underline_text_color: secondary,
-        quote_text_color: quote,
+        quote_text_color: accent,
         blur_tint_color: rgba(surfaces.bodyFrom, `${theme.slug}: blur tint`, 0.65),
         chat_tint_color: rgba(surfaces.bodyTo, `${theme.slug}: chat tint`, 0),
         user_mes_blur_tint_color: rgba(surfaces.rowAlt, `${theme.slug}: user tint`, 0.5),
@@ -177,7 +183,20 @@ function fixedRecord(theme, tokens, name) {
         sheldBackgroundColor: rgba(surfaces.body, `${theme.slug}: UI shell`, 0),
         custom_css: '',
     };
-    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, migrateFromV1, migrateFromV2, uiTheme, surfaces };
+    // Check the exported, rounded translucent colours on the intended canvas, not just opaque source swatches.
+    const shell = composite(requiredColor(settings.sheldBackgroundColor), surfaces.canvas);
+    const panel = composite(requiredColor(uiTheme.blur_tint_color), surfaces.canvas);
+    const textSurfaces = [
+        ...readableBackgrounds,
+        ...[shell, panel].flatMap(background => [
+            background,
+            ...[settings.customBgColor1, settings.customBgColor2, uiTheme.user_mes_blur_tint_color, uiTheme.bot_mes_blur_tint_color]
+                .map(color => composite(requiredColor(color), background)),
+        ]),
+    ];
+    settings.customThemeColor = rgba(readableColor(accent, textSurfaces, 4.5), `${theme.slug}: primary ink`);
+    uiTheme.quote_text_color = rgba(readableColor(accent, textSurfaces, 4.5), `${theme.slug}: quote ink`);
+    return { slug: theme.slug, family: theme.family, mode: theme.mode, name, settings, migrateFromV1, migrateFromV2, migrateFromV3, uiTheme, surfaces, textSurfaces };
 }
 
 function effectiveSurfaces(tokens, slug) {
@@ -193,6 +212,7 @@ function effectiveSurfaces(tokens, slug) {
     const bodyTo = paint(tokens.surface.bodyTo, canvas, 'bodyTo');
     const body = mixColors(bodyFrom, bodyTo, 0.5);
     return {
+        canvas,
         headFrom,
         headTo,
         head: mixColors(headFrom, headTo, 0.5),
@@ -288,6 +308,7 @@ function validateRecords(records, knownSettingIds) {
         assert.deepEqual(Object.keys(record.settings), MOONLIT_KEYS, `${record.slug}: unexpected Moonlit schema`);
         assert.deepEqual(Object.keys(record.migrateFromV1), ['customBgColor1', 'customBgColor2', 'customTopBarColor', 'sheldBackgroundColor'], `${record.slug}: unexpected v1 migration schema`);
         assert.deepEqual(Object.keys(record.migrateFromV2), ['sheldBackgroundColor'], `${record.slug}: unexpected v2 migration schema`);
+        assert.deepEqual(Object.keys(record.migrateFromV3), record.mode === 'adaptive' ? [] : ['customThemeColor', 'customlastInContext'], `${record.slug}: unexpected v3 migration schema`);
         assert.equal(record.settings.rawCustomCss, '', `${record.slug}: rawCustomCss must be empty`);
         if (record.mode === 'adaptive') {
             for (const [key, value] of Object.entries(record.settings)) {
@@ -301,11 +322,12 @@ function validateRecords(records, knownSettingIds) {
         assert.equal(record.uiTheme.custom_css, '', `${record.slug}: custom_css must be empty`);
         for (const key of UI_COLOR_KEYS) assertRgba(record.uiTheme[key], `${record.slug}: ${key}`);
 
-        const surfaces = [record.surfaces.body, record.surfaces.row, record.surfaces.rowAlt];
+        const surfaces = record.textSurfaces;
         assertContrast(record.settings.customThemeColor, surfaces, `${record.slug}: primary`);
         assertContrast(record.settings.customThemeColor2, surfaces, `${record.slug}: secondary`);
         assertContrast(record.uiTheme.main_text_color, surfaces, `${record.slug}: body ink`);
         assertContrast(record.uiTheme.italics_text_color, surfaces, `${record.slug}: muted ink`);
+        assertContrast(record.uiTheme.quote_text_color, surfaces, `${record.slug}: quote ink`);
         assertContrast(record.settings['Drawer-iconColor'], [record.surfaces.head], `${record.slug}: drawer ink`);
     }
 
@@ -335,7 +357,7 @@ function assertContrast(foreground, backgrounds, label) {
 
 function buildOutputs(records, presetVersion, sourceVersion) {
     const outputs = new Map();
-    const catalog = records.map(({ name, settings, migrateFromV1, migrateFromV2 }) => ({ name, settings, migrateFromV1, migrateFromV2 }));
+    const catalog = records.map(({ name, settings, migrateFromV1, migrateFromV2, migrateFromV3 }) => ({ name, settings, migrateFromV1, migrateFromV2, migrateFromV3 }));
     const uiThemes = records.filter(({ uiTheme }) => uiTheme).map(({ uiTheme }) => uiTheme);
     outputs.set('src/config/regex-agent-presets.generated.js',
         `// Generated by tools/generate-regex-agent-presets.mjs from Regex Agent Themes v${sourceVersion}. Do not edit.\n`

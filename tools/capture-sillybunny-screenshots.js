@@ -1,71 +1,80 @@
 #!/usr/bin/env node
 
 /**
- * Moonlit Echoes (SillyBunny fork) — README screenshot capture.
+ * Moonlit Echoes (SillyBunny fork) - README screenshot capture.
  *
  * Drives a running SillyBunny instance with Playwright and photographs the theme
  * the way the README presents it: the shell overview, system messages, the preset
- * manager, all eight chat styles, visual novel mode, and a mobile pair.
+ * manager, all eight chat styles, and a mobile pair.
  *
  * The shots in .github/SillyBunnyPreview/ are produced by this script, so a future
  * SillyBunny or theme release can be re-photographed instead of re-staged by hand.
  *
  * Requires:
- *   - a SillyBunny instance serving this extension (see --url)
+ *   - a disposable SillyBunny test profile serving this extension (see --url)
+ *   - --disposable-test-profile to acknowledge that settings will be changed
  *   - Playwright, which this repo does not vendor (see --sillybunny)
  *
  * Staging the instance (the script drives the browser, it cannot place files):
  *   - copy "theme/Glimmer - by Rivelle.json" into data/<user>/themes/ so --ui-theme resolves
- *   - keep the bundled Bunny Guide welcome chat; it is the subject of every chat shot
+ *   - keep the stock Bunny Guide (default_SillyBunnyGuide.png) and its sample chat;
+ *     renamed/replaced assistants are rejected, and no private data should be present
  *   - set a persona avatar. The published shots use SillyBunny's own pixel bunny
  *     (public/img/sillybunny-pixel-logo.png); the stock silhouette dominates the frame
  *     in the avatar-forward styles (Echo, Whisper, Ripple).
  *
  * Usage:
- *   node tools/capture-sillybunny-screenshots.js --sillybunny=/path/to/SillyBunny
- *   node tools/capture-sillybunny-screenshots.js --desktop-only --out=/tmp/shots
+ *   node tools/capture-sillybunny-screenshots.js --help
+ *   node tools/capture-sillybunny-screenshots.js --disposable-test-profile --sillybunny=/path/to/SillyBunny
  */
 
-import { join, dirname, resolve } from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
-import { readFile } from 'fs/promises';
-import { mkdirSync } from 'fs';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { readFile } from 'node:fs/promises';
+import { mkdirSync } from 'node:fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
 
-const args = process.argv.slice(2);
-const flag = (name, fallback) => {
-    const hit = args.find(arg => arg.startsWith(`--${name}=`));
-    return hit ? hit.slice(name.length + 3) : fallback;
-};
+export function parseArgs(args) {
+    const desktopOnly = args.includes('--desktop-only');
+    const mobileOnly = args.includes('--mobile-only');
+    if (desktopOnly && mobileOnly) {
+        throw new Error('--desktop-only and --mobile-only cannot be used together.');
+    }
+    if (args.includes('--help') || args.includes('-h')) return { help: true };
+    if (!args.includes('--disposable-test-profile')) {
+        throw new Error('Capture changes host settings. Use a disposable test profile with no private data and pass --disposable-test-profile to acknowledge this.');
+    }
 
-const baseURL = flag('url', 'http://127.0.0.1:4444');
-const sillyBunnyRoot = flag('sillybunny', process.env.SILLYBUNNY_ROOT || '');
-const outDir = resolve(flag('out', join(repoRoot, '.github', 'SillyBunnyPreview')));
-const uiThemeName = flag('ui-theme', 'Glimmer - by Rivelle');
-const presetFile = resolve(flag('preset', join(repoRoot, 'theme', '[Moonlit] Glimmer - by Rivelle.json')));
-// Moonlit is built around a blurred backdrop; on the default transparent background the
-// theme's translucency and blur have nothing to sit on and the shots read as flat black.
-const backgroundName = flag('background', 'landscape beach night.jpg');
-const desktopOnly = args.includes('--desktop-only');
-const mobileOnly = args.includes('--mobile-only');
-
-// Desktop stays at 1x: these shots carry a photographic backdrop, and at 2x the set costs
-// ~30 MB in a repo that every user of the theme clones. Phones are shot at 2x because the
-// files are small and 390px wide is unreadable in a README.
-const viewports = {
-    desktop: {
-        viewport: { width: 1920, height: 1080 },
-        deviceScaleFactor: Number(flag('desktop-scale', '1')),
-    },
-    mobile: {
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: Number(flag('mobile-scale', '2')),
-        isMobile: true,
-        hasTouch: true,
-    },
-};
+    const flag = (name, fallback) => {
+        const hit = args.find(arg => arg.startsWith(`--${name}=`));
+        return hit ? hit.slice(name.length + 3) : fallback;
+    };
+    return {
+        baseURL: flag('url', 'http://127.0.0.1:4444'),
+        sillyBunnyRoot: flag('sillybunny', process.env.SILLYBUNNY_ROOT || ''),
+        outDir: resolve(flag('out', join(repoRoot, '.github', 'SillyBunnyPreview'))),
+        uiThemeName: flag('ui-theme', 'Glimmer - by Rivelle'),
+        presetFile: resolve(flag('preset', join(repoRoot, 'theme', '[Moonlit] Glimmer - by Rivelle.json'))),
+        backgroundName: flag('background', 'landscape beach night.jpg'),
+        desktopOnly,
+        mobileOnly,
+        // Keep desktop files small; mobile needs 2x for readable text at 390px wide.
+        viewports: {
+            desktop: {
+                viewport: { width: 1920, height: 1080 },
+                deviceScaleFactor: Number(flag('desktop-scale', '1')),
+            },
+            mobile: {
+                viewport: { width: 390, height: 844 },
+                deviceScaleFactor: Number(flag('mobile-scale', '2')),
+                isMobile: true,
+                hasTouch: true,
+            },
+        },
+    };
+}
 
 /** Moonlit's own settings key, from src/services/settings-service.js. */
 const MOONLIT_SETTINGS_KEY = 'SillyTavernMoonlitEchoesTheme';
@@ -87,11 +96,11 @@ const CHAT_STYLES = [
 ];
 
 /**
- * Playwright is a SillyBunny dev dependency, not one of ours — this repo ships as an
+ * Playwright is a SillyBunny dev dependency, not one of ours - this repo ships as an
  * extension and has no node_modules. Resolve it from a SillyBunny checkout, or from
  * the ambient install if the caller happens to have one.
  */
-async function loadPlaywright() {
+async function loadPlaywright(sillyBunnyRoot) {
     const candidates = [];
     if (sillyBunnyRoot) {
         candidates.push(pathToFileURL(join(sillyBunnyRoot, 'tests', 'node_modules', 'playwright', 'index.js')).href);
@@ -246,26 +255,42 @@ async function frameChatOnExchange(page) {
     await page.waitForTimeout(800);
 }
 
-async function openBunnyGuideChat(page) {
+export async function openBunnyGuideChat(page) {
     await ensureOnlyOpen(page, 'none');
 
-    const alreadyInChat = await page.locator('#chat .mes').first().isVisible().catch(() => false);
-    if (alreadyInChat) return;
-
-    const onHome = await page.locator('button[data-assistant-id="guide"][data-action="open-assistant"]').first()
-        .isVisible().catch(() => false);
-    if (!onHome) {
-        await forceClick(page, '#sb-home-toggle');
-    }
-
-    const assistant = page.locator('button[data-assistant-id="guide"][data-action="open-assistant"]').first();
-    await assistant.click({ force: true, timeout: 5000 }).catch(async () => {
-        await assistant.dispatchEvent('click');
+    const characterId = await page.evaluate(async () => {
+        const context = globalThis.SillyTavern?.getContext?.();
+        const id = context?.characters?.findIndex(character => character.avatar === 'default_SillyBunnyGuide.png');
+        if (id === undefined || id < 0 || !context.selectCharacterById) {
+            throw new Error('The stock Bunny Guide is unavailable. Use a disposable test profile with its bundled guide.');
+        }
+        // The Home assistant button can point to a user-assigned character instead.
+        await context.selectCharacterById(id, { switchMenu: false });
+        return id;
     });
 
     await page.waitForSelector('#chat', { state: 'visible', timeout: 15000 });
     await page.waitForSelector('#chat .mes', { state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
+
+    return page.evaluateHandle((id) => {
+        const selected = globalThis.SillyTavern?.getContext?.();
+        const chatId = selected?.chatId;
+        const verify = (allowHome = false) => {
+            const current = globalThis.SillyTavern?.getContext?.();
+            const inGroup = current?.groupId != null && current.groupId !== '';
+            if (current?.characters?.[id]?.avatar !== 'default_SillyBunnyGuide.png' || inGroup || !chatId) {
+                throw new Error('Bunny Guide identity could not be verified; refusing capture.');
+            }
+            // Home deliberately closes the verified guide chat. No other chat is allowed.
+            if (allowHome && current.characterId == null && document.querySelector('.welcomePanel')?.checkVisibility()) return;
+            if (String(current.characterId) !== String(id) || current.chatId !== chatId || !current.chat?.length) {
+                throw new Error('The selected chat is not the verified Bunny Guide chat; refusing capture.');
+            }
+        };
+        verify();
+        return { verify, message: null, element: null };
+    }, characterId);
 }
 
 const sections = {
@@ -279,26 +304,33 @@ const sections = {
     },
 
     /**
-     * Mirrors upstream's system_messages.png. Needs a chat open — with none selected
-     * SillyBunny fills the chat area with its home screen and the message never shows.
-     * The message is pushed in memory only; the teardown drops it before anything saves.
+     * Render the host's welcome message without inserting it into chat history, so an
+     * unrelated save cannot persist it. The handle owns the exact element before append.
      */
-    'system-messages': async (page) => {
-        await openBunnyGuideChat(page);
-        await page.evaluate(() => {
-            // 'welcome' is system_message_types.WELCOME; the enum itself is not on the context.
-            globalThis.SillyTavern?.getContext?.()?.sendSystemMessage('welcome');
+    'system-messages': async (page, target) => {
+        await target.evaluate(async (state) => {
+            const [{ getSystemMessageByType }, { updateMessageElement }] = await Promise.all([
+                import('/scripts/system-messages.js'),
+                import('/script.js'),
+            ]);
+            state.verify();
+            state.message = getSystemMessageByType('welcome');
+            if (!state.message) throw new Error('The host welcome message is unavailable.');
+            state.element = updateMessageElement(state.message, { messageId: -1 })[0];
+            state.element.id = 'moonlit-screenshot-system-message';
+            state.element.inert = true;
+            document.querySelector('#chat').appendChild(state.element);
         });
-        await page.waitForSelector('#chat .mes.last_mes', { state: 'visible', timeout: 10000 });
-        await page.evaluate(() => {
-            document.querySelector('#chat .mes.last_mes')?.scrollIntoView({ block: 'start', behavior: 'instant' });
+        await page.waitForSelector('#moonlit-screenshot-system-message', { state: 'visible', timeout: 10000 });
+        await target.evaluate(state => {
+            state.verify();
+            state.element.scrollIntoView({ block: 'start', behavior: 'instant' });
         });
         await page.waitForTimeout(1500);
     },
 
     /** The whole shell at once: an open chat with the character list alongside it. */
     'ui-overview': async (page) => {
-        await openBunnyGuideChat(page);
         await ensureOnlyOpen(page, 'characters');
         // The drawer reopens on whichever tab was last used, which is usually the card
         // editor for the selected character — not an overview of anything.
@@ -316,7 +348,6 @@ const sections = {
     },
 
     'mobile-in-chat': async (page) => {
-        await openBunnyGuideChat(page);
         await runSlashCommand(page, '/echostyle');
         await page.waitForFunction(() => document.body.classList.contains('echostyle'), null, { timeout: 10000 });
         await frameChatOnExchange(page);
@@ -339,16 +370,6 @@ const sections = {
 
 /** Teardowns for the sections that change global shell state. */
 const teardowns = {
-    // Drop the injected welcome message again. It only ever lived in memory, but leaving
-    // it in `chat` would let an unrelated save write it into the user's chat file.
-    'system-messages': async (page) => {
-        await page.evaluate(() => {
-            const context = globalThis.SillyTavern?.getContext?.();
-            context?.chat?.pop();
-            document.querySelector('#chat .mes.last_mes')?.remove();
-        });
-        await page.waitForTimeout(500);
-    },
     'theme-presets': async (page) => {
         await page.locator('#moonlit_echoes_popout .fa-circle-xmark, #moonlitEchoesPopoutHeader .fa-circle-xmark')
             .first().click({ force: true }).catch(() => {});
@@ -368,7 +389,11 @@ const elementShots = {
 const desktopPlan = ['hero-home', 'ui-overview', 'system-messages', 'theme-presets'];
 const mobilePlan = ['mobile-in-chat', 'mobile-settings'];
 
-async function shoot(page, name) {
+export async function shoot(page, name, outDir, target) {
+    await target.evaluate((state, allowHome) => {
+        state.verify(allowHome);
+        if (state.element && !state.element.isConnected) throw new Error('The temporary message disappeared; refusing capture.');
+    }, name === 'hero-home');
     const path = join(outDir, `${name}.png`);
     const selector = elementShots[name];
     if (selector) {
@@ -379,22 +404,44 @@ async function shoot(page, name) {
     console.log(`   ✓ ${name}.png`);
 }
 
-async function capture(chromium, viewportName, preset) {
-    const options = viewports[viewportName];
+export async function captureSection(page, name, outDir) {
+    const target = await openBunnyGuideChat(page);
+    try {
+        await sections[name](page, target);
+        await shoot(page, name, outDir, target);
+    } finally {
+        try {
+            // Remove only our node, even if another message arrived or the chat changed.
+            await target.evaluate(state => {
+                state.element?.remove();
+                state.element = null;
+                state.message = null;
+            });
+            await teardowns[name]?.(page);
+        } finally {
+            await target.dispose();
+        }
+    }
+}
+
+export async function capture(chromium, viewportName, preset, config) {
+    const { baseURL, uiThemeName, backgroundName, outDir } = config;
+    const options = config.viewports[viewportName];
     const { width, height } = options.viewport;
     console.log(`\n📸 ${viewportName} (${width}x${height} @${options.deviceScaleFactor}x)`);
 
     const browser = await chromium.launch({ headless: true });
-    const context = await browser.newContext(options);
-    const page = await context.newPage();
-    page.on('console', msg => {
-        if (msg.type() === 'error') console.log(`      [browser] ${msg.text().slice(0, 160)}`);
-    });
-
     try {
+        const context = await browser.newContext(options);
+        const page = await context.newPage();
+        page.on('console', msg => {
+            if (msg.type() === 'error') console.log(`      [browser] ${msg.text().slice(0, 160)}`);
+        });
         await page.goto(baseURL, { waitUntil: 'networkidle', timeout: 45000 });
         await page.waitForTimeout(7000);
         await dismissOnboardingIfPresent(page);
+        const initialTarget = await openBunnyGuideChat(page);
+        await initialTarget.dispose();
 
         await applyUiTheme(page, uiThemeName);
         await applyMoonlitPreset(page, preset);
@@ -404,24 +451,26 @@ async function capture(chromium, viewportName, preset) {
         const plan = viewportName === 'desktop' ? desktopPlan : mobilePlan;
         for (const name of plan) {
             console.log(`   ${name}...`);
-            await sections[name](page);
-            await shoot(page, name);
-            await teardowns[name]?.(page);
+            await captureSection(page, name, outDir);
         }
 
         if (viewportName === 'desktop') {
-            await openBunnyGuideChat(page);
-            for (const style of CHAT_STYLES) {
-                console.log(`   ${style.file} (${style.label})...`);
-                await runSlashCommand(page, style.command);
-                await page.waitForFunction(
-                    (cls) => document.body.classList.contains(cls),
-                    style.bodyClass,
-                    { timeout: 10000 },
-                );
-                await page.waitForTimeout(1200);
-                await frameChatOnExchange(page);
-                await shoot(page, style.file);
+            const target = await openBunnyGuideChat(page);
+            try {
+                for (const style of CHAT_STYLES) {
+                    console.log(`   ${style.file} (${style.label})...`);
+                    await runSlashCommand(page, style.command);
+                    await page.waitForFunction(
+                        (cls) => document.body.classList.contains(cls),
+                        style.bodyClass,
+                        { timeout: 10000 },
+                    );
+                    await page.waitForTimeout(1200);
+                    await frameChatOnExchange(page);
+                    await shoot(page, style.file, outDir, target);
+                }
+            } finally {
+                await target.dispose();
             }
         }
     } finally {
@@ -429,8 +478,30 @@ async function capture(chromium, viewportName, preset) {
     }
 }
 
-async function main() {
-    console.log('🐰 Moonlit Echoes — SillyBunny screenshot capture');
+export async function main(args = process.argv.slice(2)) {
+    const config = parseArgs(args);
+    if (config.help) {
+        console.log(`Usage: node tools/capture-sillybunny-screenshots.js --disposable-test-profile [options]
+
+Use only a disposable test profile with the stock Bunny Guide and no private data.
+Capture changes host settings and writes PNG files. The flag acknowledges this;
+it cannot detect whether you supplied a real account. Temporary messages are display-only.
+
+  --help, -h                Show help without host access, file writes or Playwright
+  --url=URL                 Test instance (default: http://127.0.0.1:4444)
+  --sillybunny=PATH          Checkout providing Playwright (or SILLYBUNNY_ROOT)
+  --out=PATH                 PNG directory (default: .github/SillyBunnyPreview)
+  --desktop-only            Skip mobile shots
+  --mobile-only             Skip desktop shots; cannot combine with --desktop-only
+  --ui-theme=NAME           Installed native UI theme (default: Glimmer - by Rivelle)
+  --preset=PATH             Moonlit preset JSON (default: bundled Glimmer)
+  --background=NAME         Installed background (default: landscape beach night.jpg)
+  --desktop-scale=NUMBER    Desktop pixel scale (default: 1)
+  --mobile-scale=NUMBER     Mobile pixel scale (default: 2)`);
+        return;
+    }
+    const { baseURL, outDir, presetFile } = config;
+    console.log('Moonlit Echoes - SillyBunny screenshot capture');
     console.log(`   target : ${baseURL}`);
     console.log(`   output : ${outDir}`);
 
@@ -438,26 +509,26 @@ async function main() {
         const response = await fetch(baseURL);
         if (!response.ok) throw new Error(`server returned ${response.status}`);
     } catch (error) {
-        console.error(`\n❌ No SillyBunny at ${baseURL} (${error.message}). Start it with: node server.js --port 4444`);
-        process.exit(1);
+        throw new Error(`No SillyBunny at ${baseURL} (${error.message}). Start your disposable test instance first.`);
     }
 
     const preset = JSON.parse(await readFile(presetFile, 'utf8'));
     if (!preset?.moonlitEchoesPreset || !preset.settings) {
-        console.error(`\n❌ ${presetFile} is not a Moonlit preset export.`);
-        process.exit(1);
+        throw new Error(`${presetFile} is not a Moonlit preset export.`);
     }
 
     mkdirSync(outDir, { recursive: true });
-    const { chromium } = await loadPlaywright();
+    const { chromium } = await loadPlaywright(config.sillyBunnyRoot);
 
-    if (!mobileOnly) await capture(chromium, 'desktop', preset);
-    if (!desktopOnly) await capture(chromium, 'mobile', preset);
+    if (!config.mobileOnly) await capture(chromium, 'desktop', preset, config);
+    if (!config.desktopOnly) await capture(chromium, 'mobile', preset, config);
 
     console.log('\n✅ Done.');
 }
 
-main().catch(error => {
-    console.error(`\n❌ Capture failed: ${error.message}`);
-    process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+    main().catch(error => {
+        console.error(`Capture failed: ${error.message}`);
+        process.exitCode = 1;
+    });
+}

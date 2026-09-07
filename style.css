@@ -9,11 +9,6 @@
    - - - - - - - - - - - - - - - - - */
 
 
-body {
-    --interactable-outline-color: transparent;
-    --interactable-outline-color-faint: transparent;
-}
-
 .welcomePanel {
     padding-top: 15px;
 }
@@ -33,14 +28,17 @@ body {
     --custom-big-chat-avatar-frame-width: calc(var(--custom-big-chat-avatar-width) + 8px);
     --custom-big-chat-avatar-frame-height: calc(var(--custom-big-chat-avatar-height) + 8px);
     --customThemeMenuColor: var(--SmartThemeChatTintColor);
+    --sb-scrollbar-thumb: var(--customScrollbarColor, rgba(255, 255, 255, 0.5));
     --active: var(--customThemeColor);
     --SmartThemeCheckboxTickColor: var(--SmartThemeBlurTintColor);
     --customMesPadding: calc(1em * var(--messageMarginScale, 1));
     --moonlit-sb-message-line-height-desktop: calc(var(--mainFontSize) + var(--lineSpacingDesktopLeading, .5rem));
     --moonlit-sb-message-line-height-mobile: calc(var(--mainFontSize) + var(--lineSpacingMobileLeading, .35rem));
+    /* Capture saved root values before the host's phone message overrides. */
+    --moonlit-message-paragraph-spacing-top: var(--mesParagraphSpacingTop, 0.5em);
+    --moonlit-message-paragraph-spacing-bottom: var(--mesParagraphSpacingBottom, 0.5em);
     --moonlit-sb-message-gap-10: calc(10px * var(--messageMarginScale, 1));
     --customRippleAvatarRatio: 1.5;
-    --moonlit-sb-topbar-offset: var(--sb-topbar-primary-height, var(--topBarBlockSize));
 
     /* Secondary Colors 次要顏色 */
     --fullred: rgb(229, 57, 53);
@@ -56,14 +54,8 @@ body {
     --customThemeColor-25: color-mix(in srgb, var(--customThemeColor) 25%, transparent);
 
     /* !!! Important: Do Not Modify 不要修改 !!! */
-    --topBarBlockSize: calc(var(--topBarIconSize) + var(--topBarBlockPadding) - 1px);
     --bottomInputAreaHeight: 115px;
     --custom-echo-avatar: var(--custom-chat-avatar-frame-size);
-}
-@media screen and (max-width: 1000px) {
-    :root {
-        --topBarBlockSize: calc(var(--topBarIconSize) + var(--topBarBlockPadding) + 5px) !important;
-    }
 }
 
 /* Alert Red 紅色警告 */
@@ -82,17 +74,13 @@ body {
 }
 
 /* Remove Black Shadow 消除黑色陰影 */
-button:focus,
-a:focus {
-    outline: none;
-}
 html * {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-.custom-drawer-icon,
-.inline-drawer-icon,
-.right_menu_button,
-input[type='checkbox'] {
+.custom-drawer-icon:not(:focus-visible),
+.inline-drawer-icon:not(:focus-visible),
+.right_menu_button:not(:focus-visible),
+input[type='checkbox']:not(:focus-visible) {
     filter: none;
     box-shadow: none !important;
 }
@@ -263,11 +251,6 @@ code {
 }
 
 /* --- Input Fields 輸入框樣式 --- */
-select:focus-visible,
-input:focus-visible,
-textarea:focus-visible {
-    outline: 0px solid var(--customThemeColor);
-}
 .select2-dropdown {
     background-color: var(--SmartThemeBlurTintColor);
     border: 1px solid var(--SmartThemeBorderColor) !important;
@@ -414,7 +397,6 @@ input[type="range"] {
 }
 .popup-content {
     overflow-y: auto !important;
-    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch;
     margin: 10px 0;
 
@@ -734,57 +716,9 @@ body.movingUI ::-webkit-scrollbar-thumb:vertical {
 /* Top Bar 上方導航條 */
 #top-bar {
     background-color: var(--customTopBarColor) !important;
-    width:  auto;
     border-radius: 0px !important;
     box-shadow: 0 1px 15px 0 var(--SmartThemeShadowColor);
     backdrop-filter: blur(var(--SmartThemeBlurStrength));
-    box-sizing: border-box;
-}
-
-/* Settings Holder 設置區容器 */
-#top-settings-holder {
-    display: flex;
-    margin: 0 auto;
-    height: var(--topBarBlockSize);
-    justify-content: center;
-    z-index: 3005;
-    position: relative;
-    box-sizing: border-box;
-    transition: all 0.8s ease;
-    width:  auto;
-    border-bottom: 1.25px solid color-mix(in srgb, var(--SmartThemeBodyColor) 5%, transparent);
-    box-sizing: border-box;
-    max-height: var(--topBarBlockSize); /* 設置最大高度，防止超出 */
-}
-
-body:has(#sb-topbar-stack) {
-    --sb-topbar-layout-offset: var(--moonlit-sb-topbar-offset);
-}
-
-body:has(#sb-topbar-stack) #top-settings-holder {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    overflow: visible !important;
-    pointer-events: none !important;
-    border-bottom: 0 !important;
-}
-
-body:has(#sb-topbar-stack) #top-settings-holder > .drawer,
-body:has(#sb-topbar-stack) #top-settings-holder > .sb-drawer-host {
-    height: 0 !important;
-    min-height: 0 !important;
-    max-height: 0 !important;
-    overflow: visible !important;
-}
-
-body:has(#sb-topbar-stack) #top-settings-holder :is(.drawer-content, .popup),
-body:has(#sb-topbar-stack) #top-settings-holder :is(.drawer-content, .popup) * {
-    pointer-events: auto;
 }
 
 /* --- Basic Menu 基礎內容選單 --- */
@@ -794,12 +728,16 @@ body:has(#sb-topbar-stack) #top-settings-holder :is(.drawer-content, .popup) * {
     position: relative;
     object-fit: contain;
     font-size: calc(var(--mainFontSize) * 1.45);
-    color: var(--Drawer-iconColor) !important;
     z-index: 9000 !important;
     display: inline-flex;
     height: 100%;
 }
-.drawer-icon.openIcon {
+.drawer-icon,
+.drawer-icon.openIcon,
+#sb-topbar-stack :is(.sb-proxy-button, .sb-chatbar-button) > i,
+#sb-mobile-nav i,
+#sb-mobile-chat-tools-panel .sb-chatbar-button > i,
+.sb-shell-tab > i {
     color: var(--Drawer-iconColor) !important;
 }
 @media screen and (max-width: 1000px) {
@@ -962,7 +900,6 @@ body:has(#sb-topbar-stack) #top-settings-holder :is(.drawer-content, .popup) * {
     position: unset !important;
 
     @media screen and (max-width: 1000px) {
-        padding: 0 8px !important;
         border: 0 !important;
         padding-bottom: 0 !important;
 
@@ -1405,14 +1342,13 @@ body.bubblechat {
 body.documentstyle {
     #sheld::before {
         background: var(--customTopBarColor);
-        backdrop-filter: blur(calc(var(--sheldBlurStrength) * 1px));
         opacity: 0.7;
         z-index: -1;
     }
 
     #chat {
         @media screen and (max-width: 1000px) {
-            padding: 1em !important;
+            padding-block: 1em !important;
         }
 
         .mes {
@@ -1579,7 +1515,6 @@ body.documentstyle {
 @media screen and (max-width: 1000px) {
     #form_sheld {
         margin: 0 !important;
-        padding: 0 !important;
         border: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -2309,7 +2244,7 @@ body.big-avatars #HotSwapWrapper .hotswap.avatars_inline {
 
     @media screen and (max-width: 1000px) {
         max-height: 30dvh !important;
-        transition: all 0.5s ease-in-out !important;
+        transition: all 0.5s ease-in-out;
     }
 }
 #HotSwapWrapper:not(:hover) .hotswap.avatars_inline {
@@ -2954,6 +2889,7 @@ body.flatchat #chat .swipeRightBlock,
 body.bubblechat #chat .swipeRightBlock,
 body.documentstyle #chat .swipeRightBlock {
     right: 15px !important;
+    inline-size: max-content;
 }
 body.documentstyle #chat .swipe_left {
     left: unset !important;
@@ -3025,24 +2961,30 @@ body.bubblechat {
 /* 自定義聊天區塊設置
 - - - - - - - - - - - - - - - - - */
 
-#chat .mes[is_user="false"] .name_text {
-    font-size: var(--charNameFontSize, 0.95rem) !important;
+body #chat .mes[is_user="false"] .ch_name .name_text {
+    font-size: var(--charNameFontSize, inherit) !important;
 }
-#chat .mes[is_user="true"] .name_text {
-    font-size: var(--userNameFontSize, 0.95rem) !important;
+body #chat .mes[is_user="true"] .ch_name .name_text {
+    font-size: var(--userNameFontSize, inherit) !important;
 }
 
-#chat .mes_text p {
-    letter-spacing: var(--messageTextLetterSpacing, 0em) !important;
-    line-height: var(--messageLineHeight, var(--moonlit-sb-message-line-height-desktop)) !important;
+#chat .mes_text {
+    letter-spacing: var(--messageTextLetterSpacing, inherit) !important;
+    line-height: var(--moonlit-message-line-height, var(--moonlit-sb-message-line-height-desktop)) !important;
     font-size: var(--messageTextFontSize, var(--mainFontSize)) !important;
-    margin-top: var(--mesParagraphSpacingTop, 0.5em) !important;
-    margin-bottom: var(--mesParagraphSpacingBottom, 0.5em) !important;
+}
+
+body #chat .mes .mes_block .mes_text p {
+    letter-spacing: inherit !important;
+    line-height: inherit !important;
+    font-size: inherit !important;
+    margin-top: var(--moonlit-message-paragraph-spacing-top) !important;
+    margin-bottom: var(--moonlit-message-paragraph-spacing-bottom) !important;
 }
 
 @media screen and (max-width: 1000px) {
-    #chat .mes_text p {
-        line-height: var(--messageLineHeight, var(--moonlit-sb-message-line-height-mobile)) !important;
+    #chat .mes_text {
+        line-height: var(--moonlit-message-line-height, var(--moonlit-sb-message-line-height-mobile)) !important;
     }
 }
 
@@ -3062,18 +3004,13 @@ body.bubblechat {
     --sb-chatbar-surface-bg: color-mix(in srgb, var(--SmartThemeBlurTintColor) 94%, transparent);
     --sb-mobile-overlay-bg: color-mix(in srgb, var(--SmartThemeBlurTintColor) 96%, transparent);
     --moonlit-sb-avatar-column-width: max(var(--custom-ChatAvatar, 40px), 56px);
-    --moonlit-sb-composer-button-radius: var(--sb-icon-control-radius, 10px);
-    --moonlit-sb-composer-button-size: var(--sb-composer-action-size, var(--bottomFormBlockSize, 36px));
     --moonlit-sb-composer-send-ratio: 1.45;
-    --moonlit-sb-composer-send-width: var(--sb-composer-send-width, calc(var(--moonlit-sb-composer-button-size) * var(--moonlit-sb-composer-send-ratio)));
-    --moonlit-sb-composer-icon-size: var(--sb-composer-action-icon-size, calc(var(--bottomFormIconSize, 24px) * 0.72));
     --moonlit-sb-send-icon-idle-color: color-mix(
         in srgb,
         var(--sb-on-solid-accent, var(--sb-on-accent, var(--color-background, var(--SmartThemeBlurTintColor)))) 74%,
         var(--color-primary, var(--sb-accent, var(--SmartThemeQuoteColor))) 26%
     );
     --moonlit-sb-send-icon-active-color: var(--sb-on-solid-accent, var(--sb-on-accent, var(--color-background, var(--SmartThemeBlurTintColor))));
-    --moonlit-sb-ripple-avatar-mobile-height: calc(var(--moonlit-sb-ripple-avatar-mobile-width) * var(--customRippleAvatarRatio, 1.5));
     --moonlit-sb-ripple-avatar-mobile-width: var(--customRippleAvatarMobileWidth, 100px);
     --moonlit-sb-ripple-avatar-desktop-width: min(var(--customRippleAvatarWidth, 180px), 35%);
     --moonlit-sb-ripple-left-bottom-gap: 10px;
@@ -3115,14 +3052,14 @@ body.bubblechat {
     body:has(#sb-topbar-stack) :is(
         #left-nav-panel,
         #right-nav-panel,
-        #WorldInfo,
+        #WorldInfo:where(:not(.sb-shell-embedded-content)),
         #sb-mobile-nav-panel,
         #sb-mobile-chat-tools-panel
     ),
     body:has(.sb-shell-root) :is(
         #left-nav-panel,
         #right-nav-panel,
-        #WorldInfo,
+        #WorldInfo:where(:not(.sb-shell-embedded-content)),
         #sb-mobile-nav-panel,
         #sb-mobile-chat-tools-panel
     ) {
@@ -3182,6 +3119,9 @@ body.bubblechat {
 
 #send_form #nonQRFormItems {
     align-items: center !important;
+    --moonlit-sb-composer-button-size: var(--sb-composer-action-size, var(--bottomFormBlockSize, 36px));
+    --moonlit-sb-composer-send-width: var(--sb-composer-send-width, calc(var(--moonlit-sb-composer-button-size) * var(--moonlit-sb-composer-send-ratio)));
+    --moonlit-sb-composer-icon-size: var(--sb-composer-action-icon-size, calc(var(--bottomFormIconSize, 24px) * 0.72));
     --moonlit-sb-composer-left-rail-width: calc(var(--moonlit-sb-composer-button-size) * 2 + 8px);
     --moonlit-sb-composer-right-rail-width: calc(var(--moonlit-sb-composer-button-size) + var(--moonlit-sb-composer-send-width) + 8px);
     grid-template-columns:

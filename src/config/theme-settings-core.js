@@ -157,7 +157,7 @@ export const coreThemeSettings = [
         "displayText": t`Message Text Line Height`,
         "default": MESSAGE_LINE_HEIGHT_NATIVE_VALUE,
         "category": "chat-style",
-        "description": t`Optional fallback line height. Leave blank to use SillyBunny's native Line Spacing slider`
+        "description": t`Override message line height on desktop and mobile. Leave blank to use SillyBunny's native Line Spacing slider`
     },
     {
         "type": "text",
@@ -238,7 +238,7 @@ export const coreThemeSettings = [
             .options-content a,
             .list-group-item,
             .mes_button {
-                transition: all 0.5s ease !important;
+                transition: all 0.5s ease;
             }
             .drawer-icon.openIcon,
             #rightSendForm>div:hover,
@@ -277,11 +277,21 @@ export const coreThemeSettings = [
     "cssBlock": `
         .drawer-content,
         .fillLeft,
-        .fillRight {
-            transition-property: unset;
-            transition-duration: unset;
-            transition-timing-function: unset;
-            transition-behavior: unset;
+        .fillRight,
+        .sb-shell-root,
+        .sb-shell-nav-wrapper,
+        .sb-shell-main,
+        .sb-shell-tab,
+        #right-nav-panel,
+        #right-nav-panel > *,
+        #sb-topbar-stack,
+        #sb-topbar-stack *,
+        #sb-topbar-stack *::before,
+        #sb-topbar-stack *::after,
+        #sb-mobile-nav,
+        #sb-mobile-chat-tools {
+            transition: none !important;
+            animation: none !important;
         }
     `
     },
@@ -307,29 +317,31 @@ export const coreThemeSettings = [
     {
         "type": "checkbox",
         "varId": "newMenuMaxHeight",
-        "displayText": t`Dynamically Adjust Menu Max Height`,
+        "displayText": t`Dynamically Adjust Menu Max Height (Legacy)`,
         "default": false,
         "category": "theme-extras",
-        "description": t`Dynamically adjust the menu's maximum height based on the message input field. May not work on all devices—disable this option if the menu doesn't close properly`,
+        "description": t`Legacy menu height adjustment for non-SillyBunny shells. SillyBunny's native navigation handles menu sizing.`,
         "cssBlock": `
             /* Dynamic Menu Height */
-            .drawer-content {
-                max-height: calc(100dvh - var(--topBarBlockSize) - var(--formSheldHeight) - 5px) !important;
-            }
-            @media screen and (max-width: 1000px) {
-                .drawer-content,
-                .fillLeft, .fillRight,
-                #left-nav-panel, #right-nav-panel {
-                    max-height: calc(100dvh - var(--topBarBlockSize) - var(--formSheldHeight) + 4px) !important;
+            body:not(:has(.sb-shell-root)):not(:has(#sb-topbar-stack)) {
+                .drawer-content {
+                    max-height: calc(100dvh - var(--topBarBlockSize) - var(--formSheldHeight) - 5px) !important;
                 }
+                @media screen and (max-width: 1000px) {
+                    .drawer-content,
+                    .fillLeft, .fillRight,
+                    #left-nav-panel, #right-nav-panel {
+                        max-height: calc(100dvh - var(--topBarBlockSize) - var(--formSheldHeight) + 4px) !important;
+                    }
 
-                #floatingPrompt,
-                #cfgConfig,
-                #logprobsViewer,
-                #movingDivs > div,
-                #character_popup {
-                    max-height: calc(100dvh - var(--topBarBlockSize)) !important;
-                    padding-bottom: 15px !important;
+                    #floatingPrompt,
+                    #cfgConfig,
+                    #logprobsViewer,
+                    #movingDivs > div,
+                    #character_popup {
+                        max-height: calc(100dvh - var(--topBarBlockSize)) !important;
+                        padding-bottom: 15px !important;
+                    }
                 }
             }
         `

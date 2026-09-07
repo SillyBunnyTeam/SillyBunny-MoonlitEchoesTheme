@@ -22,7 +22,6 @@
     --moonlit-sb-hush-padding-inline: calc(1.2em * var(--moonlit-sb-message-margin-scale));
     --customRippleAvatarRatio: 1.5;
     --moonlit-sb-avatar-column-width: max(var(--custom-ChatAvatar, 40px), 56px);
-    --moonlit-sb-ripple-avatar-mobile-height: calc(var(--moonlit-sb-ripple-avatar-mobile-width) * var(--customRippleAvatarRatio, 1.5));
     --moonlit-sb-ripple-avatar-mobile-width: var(--customRippleAvatarMobileWidth, 100px);
     --moonlit-sb-ripple-avatar-desktop-width: min(var(--customRippleAvatarWidth, 180px), 35%);
     --moonlit-sb-ripple-left-bottom-gap: 10px;
@@ -373,7 +372,6 @@ body.whisperstyle #chat {
         @media screen and (max-width: 1000px) {
             &::before {
                 top: 0;
-                width: 55%;
                 min-height: 125px !important;
             }
             &::after {
@@ -1258,10 +1256,13 @@ body:is(.echostyle, .whisperstyle, .hushstyle, .ripplestyle, .tidestyle) #chat .
     line-height: 1;
     min-width: var(--moonlit-sb-swipe-control-size);
     pointer-events: auto;
-    position: relative !important;
-    right: auto !important;
     transform: none !important;
     width: var(--moonlit-sb-swipe-control-size);
+}
+
+body:is(.echostyle, .whisperstyle, .hushstyle, .ripplestyle, .tidestyle) #chat .last_mes .swipe_right {
+    position: relative !important;
+    right: auto !important;
 }
 
 body:is(.echostyle, .whisperstyle, .hushstyle, .ripplestyle, .tidestyle) #chat .last_mes .swipes-counter {
@@ -1423,6 +1424,7 @@ body:is(.echostyle, .whisperstyle, .hushstyle, .ripplestyle, .tidestyle) #chat .
     }
 
     body.ripplestyle #chat .mes:not(.smallSysMes) {
+        --moonlit-sb-ripple-avatar-mobile-height: calc(var(--moonlit-sb-ripple-avatar-mobile-width) * var(--customRippleAvatarRatio, 1.5));
         align-items: start;
         display: grid !important;
         grid-template-columns: minmax(0, var(--moonlit-sb-ripple-avatar-mobile-width)) minmax(0, 1fr) !important;

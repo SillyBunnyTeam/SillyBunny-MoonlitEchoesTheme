@@ -21,12 +21,16 @@
 
 /* Improved category title container */
 .theme-category-header {
+    width: 100%;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
     padding: 8px 0 !important;
     margin-bottom: 5px !important;
-
-    h4 {
-        font-weight: 700;
-    }
 }
 
 /* Improved labels and descriptions */
@@ -50,7 +54,7 @@
 }
 
 /* Improved dropdown menu */
-select.widthNatural.flex1.margin0 {
+select.moonlit-select.widthNatural.flex1.margin0 {
     min-width: 185.5px !important;
     max-width: 480px !important;
 }
@@ -77,6 +81,23 @@ input[type="number"].moonlit-neo-range-input {
 /* Improved color picker visual effects */
 .color-preview {
     box-shadow: 0 0 3px var(--black30a);
+}
+
+.theme-setting-container :is(input, select, textarea):focus-visible,
+.theme-color-picker .color-preview:focus-within,
+.theme-category-header:focus-visible,
+.moonlit-section-toggle:focus-visible,
+.moonlit-tab-button:focus-visible,
+#moonlit_echoes_popout .dragClose:focus-visible {
+    outline: 2px solid var(--SmartThemeBodyColor);
+    outline-offset: 2px;
+}
+
+#moonlit_echoes_popout .dragClose {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
 }
 
 /* Improved input box style */

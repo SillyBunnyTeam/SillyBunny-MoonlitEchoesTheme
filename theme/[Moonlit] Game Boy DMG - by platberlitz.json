@@ -1,6 +1,6 @@
 {
   "moonlitEchoesPreset": true,
-  "presetVersion": "3.2.0-sb17",
+  "presetVersion": "3.2.0-sb18",
   "presetName": "Game Boy DMG - by platberlitz",
   "settings": {
     "customThemeColor": "rgba(251, 251, 253, 1)",
@@ -11,7 +11,7 @@
     "Drawer-iconColor": "rgba(251, 251, 253, 1)",
     "sheldBackgroundColor": "rgba(58, 72, 6, 0.65)",
     "customScrollbarColor": "rgba(15, 56, 15, 1)",
-    "customlastInContext": "4px solid rgba(251, 251, 253, 1)",
+    "customlastInContext": "4px solid rgba(15, 56, 15, 1)",
     "rawCustomCss": ""
   }
 }

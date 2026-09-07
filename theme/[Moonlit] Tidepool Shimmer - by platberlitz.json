@@ -1,6 +1,6 @@
 {
   "moonlitEchoesPreset": true,
-  "presetVersion": "3.2.0-sb17",
+  "presetVersion": "3.2.0-sb18",
   "presetName": "Tidepool Shimmer - by platberlitz",
   "settings": {
     "customThemeColor": "rgba(17, 19, 24, 1)",
@@ -11,7 +11,7 @@
     "Drawer-iconColor": "rgba(36, 82, 90, 1)",
     "sheldBackgroundColor": "rgba(240, 250, 246, 0.65)",
     "customScrollbarColor": "rgba(107, 181, 179, 1)",
-    "customlastInContext": "3px solid rgba(17, 19, 24, 1)",
+    "customlastInContext": "3px solid rgba(61, 159, 156, 1)",
     "rawCustomCss": ""
   }
 }

@@ -230,23 +230,21 @@ export const mobileThemeSettings = [
         "description": t`Keep Quick Reply buttons on a single horizontal row on mobile (screen width ≤ 1000px) with horizontal scrolling, instead of wrapping into multiple lines`,
         "cssBlock": `
             @media screen and (max-width: 1000px) {
-                #qr--bar {
-                    justify-content: center !important;
-                    max-height: unset !important;
-                    overflow: hidden !important;
+                #send_form #qr--bar {
+                    flex-wrap: nowrap;
+                    justify-content: flex-start;
+                    max-height: none;
+                    overflow-x: auto;
+                    overflow-y: hidden;
                 }
-                #qr--bar > .qr--buttons {
-                    flex-wrap: nowrap !important;
-                    justify-content: flex-start !important;
-                    margin-inline: auto !important;
-                    overflow-x: auto !important;
-                    overflow-y: hidden !important;
-                    width: max-content !important;
-                    max-width: 100% !important;
-
-                    *:focus {
-                        outline: none;
-                    }
+                #send_form #qr--bar > .qr--buttons {
+                    flex: 0 0 auto;
+                    flex-wrap: nowrap;
+                    justify-content: flex-start;
+                    width: max-content;
+                }
+                #send_form #qr--bar .qr--button {
+                    flex-shrink: 0;
                 }
             }
         `
@@ -271,7 +269,8 @@ export const mobileThemeSettings = [
                 #nonQRFormItems {
                     order: 2 !important;
                 }
-                #qr--bar {
+                #qr--bar,
+                #gg-action-button-container:has(#qr--bar) {
                     order: 3 !important;
                 }
 
